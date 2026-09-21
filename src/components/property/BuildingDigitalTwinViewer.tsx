@@ -23,6 +23,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { getRoomCadastre, RoomCadastreRecord, PCCRC_ROOMS_CADASTRE } from '../../data/pccrcRoomCadastre';
+import { HandGestureController } from './HandGestureController';
 
 export type DisplayMode = 'realistic' | 'xray' | 'wireframe';
 
@@ -521,12 +522,14 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
 
   // States
   const [animStage, setAnimStage] = useState<'idle' | 'empty' | 'building' | 'entering' | 'at_room' | 'free_orbit'>('idle');
-  const [telemetryText, setTelemetryText] = useState('STANDBY: WAITING FOR SEARCH COMMAND');
+  const [telemetryText, setTelemetryText] = useState('');
   const [buildPercent, setBuildPercent] = useState(0);
   const [displayMode, setDisplayMode] = useState<DisplayMode>('realistic');
   const [selectedFloor, setSelectedFloor] = useState<string>('all');
   const [showPointCloudSegmentation, setShowPointCloudSegmentation] = useState(false); // Dots visible only after clicking
   const [isModelLoaded, setIsModelLoaded] = useState(false);
+  const [viewerReady, setViewerReady] = useState(false);
+  const [hasReachedRoom, setHasReachedRoom] = useState(false);
 
   // Dynamic Proximity Detection: shows room mark on door mid when near, hides when > 5.5m
   const [proximityRoom, setProximityRoom] = useState<{ 
@@ -571,6 +574,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     controls.dampingFactor = 0.06;
     controls.maxPolarAngle = Math.PI / 2 + 0.02;
     controls.enabled = false;
+    setViewerReady(true);
 
     // --- Studio Atmospheric Lighting Matching Architectural Overcast Reference ---
     const hemiLight = new THREE.HemisphereLight(0xcfd6de, 0x2b2f35, 1.45);
@@ -658,6 +662,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
       g.add(finial);
 
       g.position.set(px, 0, pz);
+      g.visible = false;
       scene.add(g);
       frontPillars.push(g);
     };
@@ -683,6 +688,8 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     atriumFloorMesh.rotation.x = -Math.PI / 2;
     atriumFloorMesh.position.set(0, 0.07, -12.6); // Elevated at y=0.07 above the slab so it's fully visible and crisp
     atriumFloorMesh.receiveShadow = true;
+    atriumFloorMesh.visible = false;
+    atriumFloorMesh.scale.set(0.01, 0.01, 0.01);
     scene.add(atriumFloorMesh);
     atriumFloorMeshRef.current = atriumFloorMesh;
 
@@ -715,6 +722,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
       plantGroup.add(foliage);
 
       plantGroup.position.set(px, 0.07, pz);
+      plantGroup.visible = false;
       scene.add(plantGroup);
       plants.push(plantGroup);
     };
@@ -744,14 +752,17 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     // Micro Point Cloud Building Structure & Laser Scanner
     const microCloud = createMicroPointCloudMesh();
     microPointCloudRef.current = microCloud;
+    microCloud.points.visible = false;
     scene.add(microCloud.points);
 
     const laserScanner = createLaserScannerPlane();
     laserScannerPlaneRef.current = laserScanner;
+    laserScanner.visible = false;
     scene.add(laserScanner);
 
     const tileWave = createTileWaveRing();
     tileWaveRingRef.current = tileWave;
+    tileWave.visible = false;
     scene.add(tileWave);
 
     // Resize Handler
@@ -801,6 +812,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     animate();
 
     return () => {
+      setViewerReady(false);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(reqId);
       controls.dispose();
@@ -974,6 +986,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
         }
         roomDoorsRef.current = allDoors;
         meshesRef.current = collected;
+        root.visible = true;
         scene.add(root);
         setIsModelLoaded(true);
       },
@@ -1199,6 +1212,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
         controls.enabled = true;
         controls.target.copy(endLook);
         setAnimStage('at_room');
+        setHasReachedRoom(true);
         setTelemetryText(`TARGET LOCKED: ROOM ${targetCad.roomCode} • VOL: ${targetCad.doorVolume.volumeM3}m³ • CENTER CLOUD: [${targetCad.centerCloud.x}, ${targetCad.centerCloud.y}, ${targetCad.centerCloud.z}]`);
 
         // Set proximityRoom ONLY for targeted room
@@ -1367,6 +1381,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
       controls.enabled = true;
       controls.target.copy(endLook);
       setAnimStage('at_room');
+      setHasReachedRoom(true);
       setTelemetryText(`TARGET REACHED: ROOM ${cad.roomCode} • VOL: ${cad.doorVolume.volumeM3}m³ • CENTER CLOUD: [${cad.centerCloud.x}, ${cad.centerCloud.y}, ${cad.centerCloud.z}]`);
 
       const hw = (mountRef.current?.clientWidth || 800) / 2;
@@ -1498,6 +1513,10 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     camera.position.set(0, 16, 52);
     camera.lookAt(0, 7.5, -6);
 
+    if (modelGroupRef.current) {
+      modelGroupRef.current.visible = true;
+    }
+
     meshesRef.current.forEach(item => { item.mesh.visible = false; });
     if (atriumFloorMeshRef.current) {
       atriumFloorMeshRef.current.visible = false;
@@ -1507,14 +1526,12 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     frontPillarsRef.current.forEach(p => { p.visible = false; });
     pottedPlantsRef.current.forEach(p => { p.visible = false; });
 
-    setAnimStage('empty');
+    setAnimStage('building');
     setBuildPercent(0);
-    setTelemetryText('INITIALIZING QUANTUM BIM SYNCHRONIZATION • GROUND CALIBRATION');
+    setTelemetryText('[STAGE 1/5] MATERIALIZING AUTHENTIC ATRIUM TILES IN STYLE: 0%');
 
-    setTimeout(() => {
-      setAnimStage('building');
-      const startTime = performance.now();
-      const constructDuration = 13500;
+    const startTime = performance.now();
+    const constructDuration = 13500;
 
       const animateBuild = (now: number) => {
         const elapsed = now - startTime;
@@ -1673,7 +1690,6 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
       };
 
       requestAnimationFrame(animateBuild);
-    }, 1500);
   }, [onConstructionComplete, targetRoomNumber, executeContinuousIndoorPath]);
 
   // Trigger one-time construction once model is fully loaded and active
@@ -1754,6 +1770,7 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
 
   const handleManualReplay = () => {
     hasConstructedRef.current = false;
+    setHasReachedRoom(false);
     executeConstructionSequence();
   };
 
@@ -1785,62 +1802,64 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
     >
 
 
-      {/* 1. Top Telemetry & Precision GNSS Strip */}
-      <div style={{
-        position: 'absolute',
-        top: '16px',
-        left: '70px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        pointerEvents: 'none',
-        zIndex: 20
-      }}>
+      {/* 1. Top Telemetry & Precision GNSS Strip (Visible only during build, flight, and target lock) */}
+      {animStage !== 'idle' && animStage !== 'empty' && Boolean(telemetryText) && (
         <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(56, 189, 248, 0.35)',
-          borderRadius: '8px',
-          padding: '7px 14px',
+          position: 'absolute',
+          top: '16px',
+          left: '70px',
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
-          boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
+          pointerEvents: 'none',
+          zIndex: 20
         }}>
           <div style={{
-            width: '9px',
-            height: '9px',
-            borderRadius: '50%',
-            backgroundColor: animStage === 'at_room' ? '#22c55e' : '#38bdf8',
-            boxShadow: `0 0 10px ${animStage === 'at_room' ? '#22c55e' : '#38bdf8'}`
-          }} />
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>
-            {telemetryText}
-          </span>
-        </div>
-
-        {animStage === 'building' && (
-          <div style={{
             backgroundColor: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(56, 189, 248, 0.4)',
-            borderRadius: '6px',
-            padding: '6px 12px',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(56, 189, 248, 0.35)',
+            borderRadius: '8px',
+            padding: '7px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            color: '#38bdf8',
-            fontSize: '12px',
-            fontFamily: 'monospace',
-            fontWeight: 700
+            gap: '10px',
+            boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
           }}>
-            <span>15s QUANTUM BUILD:</span>
-            <div style={{ width: '100px', height: '6px', backgroundColor: '#1e293b', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${buildPercent}%`, height: '100%', backgroundColor: '#38bdf8', transition: 'width 0.1s linear' }} />
-            </div>
-            <span>{buildPercent}%</span>
+            <div style={{
+              width: '9px',
+              height: '9px',
+              borderRadius: '50%',
+              backgroundColor: animStage === 'at_room' ? '#22c55e' : '#38bdf8',
+              boxShadow: `0 0 10px ${animStage === 'at_room' ? '#22c55e' : '#38bdf8'}`
+            }} />
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>
+              {telemetryText}
+            </span>
           </div>
-        )}
-      </div>
+
+          {animStage === 'building' && (
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              borderRadius: '6px',
+              padding: '6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#38bdf8',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              fontWeight: 700
+            }}>
+              <span>15s QUANTUM BUILD:</span>
+              <div style={{ width: '100px', height: '6px', backgroundColor: '#1e293b', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${buildPercent}%`, height: '100%', backgroundColor: '#38bdf8', transition: 'width 0.1s linear' }} />
+              </div>
+              <span>{buildPercent}%</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 2. Detail Mark ON DOOR MID (Center of the Door Leaf, NOT Above/Upside!) */}
       {proximityRoom && (
@@ -1905,7 +1924,14 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
         </div>
       )}
 
-
+      {/* 3. MediaPipe Hand Gesture Controller (Activates and loads AFTER reaching target room) */}
+      {viewerReady && (
+        <HandGestureController
+          isActive={isActive && hasReachedRoom}
+          camera={cameraRef.current}
+          controls={controlsRef.current}
+        />
+      )}
 
       <style>{`
         @keyframes fadeInScale {

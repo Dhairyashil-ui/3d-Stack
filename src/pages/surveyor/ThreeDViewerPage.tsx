@@ -9,6 +9,7 @@
 // 7. Dynamic Proximity Detection: Zoom out -> room number hides; Get close to new room -> room appears with details
 
 import React, { useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { IndiaToPropertyMap } from '../../components/property/IndiaToPropertyMap';
 import { BuildingDigitalTwinViewer, DisplayMode } from '../../components/property/BuildingDigitalTwinViewer';
 import { PropertyDetailsPanel } from '../../components/property/PropertyDetailsPanel';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 
 export const ThreeDViewerPage: React.FC = () => {
+  const location = useLocation();
   // Input states: 14-Digit ULPIN and Building-Floor-Area-Room Unit ID
   const [ulpinInput, setUlpinInput] = useState('27250401420089');
   const [buildingIdInput, setBuildingIdInput] = useState('0089-01-01-119');
@@ -49,18 +51,22 @@ export const ThreeDViewerPage: React.FC = () => {
 
   // Direct URL Inspection (e.g. ?direct=1&room=A-119 or ?search=1)
   React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     if (params.get('search') === '1' || params.get('direct') === '1') {
       const roomParam = params.get('room') || 'A-119';
       setTargetRoom(roomParam);
       setSearchMinimized(true);
+      setShowDetailsPanel(false);
       if (params.get('direct') === '1') {
         setAppState('twin_active');
+        if ((window as any).__twinViewer?.zoomToRoom) {
+          (window as any).__twinViewer.zoomToRoom(roomParam);
+        }
       } else {
         setAppState('zooming_to_prop');
       }
     }
-  }, []);
+  }, [location.search]);
 
   // 1. Search Trigger: Zooms map or flies directly to door center
   const handleSearch = () => {
@@ -70,8 +76,9 @@ export const ThreeDViewerPage: React.FC = () => {
       if ((window as any).__twinViewer?.zoomToRoom) {
         (window as any).__twinViewer.zoomToRoom(detectedRoom);
       }
-      setShowDetailsPanel(true);
+      setShowDetailsPanel(false);
     } else {
+      setShowDetailsPanel(false);
       setAppState('zooming_to_prop');
     }
     setSearchMinimized(true);
@@ -80,7 +87,7 @@ export const ThreeDViewerPage: React.FC = () => {
   // 2. Map Zoom & 3s Marking Complete -> Smoothly opens our building with details panel & controls
   const handleMapZoomComplete = useCallback(() => {
     setAppState('twin_active');
-    setShowDetailsPanel(true);
+    setShowDetailsPanel(false);
   }, []);
 
   // 3. Camera Arrived at Room Door -> Show Details Panel WITHOUT changing frame!

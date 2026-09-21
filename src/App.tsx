@@ -62,6 +62,7 @@ import { BuildingFloorUnitRecordsPage } from './pages/surveyor/BuildingFloorUnit
 import { EvidenceVaultPage } from './pages/surveyor/EvidenceVaultPage';
 import { SurveyorComparisonPage } from './pages/surveyor/SurveyorComparisonPage';
 import { SurveyorVerificationQueuePage } from './pages/surveyor/SurveyorVerificationQueuePage';
+import { BhunakshaPage } from './pages/bhunaksha/BhunakshaPage';
 
 export function App() {
   return (
@@ -69,6 +70,11 @@ export function App() {
       <Routes>
         {/* 1. Public Landing Portal */}
         <Route path="/" element={<PublicPortalPage />} />
+
+        {/* Dedicated BhuNaksha 1-Click ULPIN Generator (Standalone Independent Portal) */}
+        <Route path="/bhunaksha" element={<BhunakshaPage />} />
+        <Route path="/bhunaksha-ulpin" element={<BhunakshaPage />} />
+        <Route path="/bhu-naksha" element={<BhunakshaPage />} />
 
         {/* 2. Authentication */}
         <Route path="/login" element={<LoginPage />} />

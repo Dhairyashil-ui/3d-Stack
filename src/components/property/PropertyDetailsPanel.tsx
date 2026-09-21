@@ -5,12 +5,12 @@
 // Clean, professional layout with integrated 3D Digital Twin controls (display mode, floor filter, point cloud, replay)
 
 import React, { useState } from 'react';
-import { 
-  Building2, 
-  MapPin, 
-  Layers, 
-  CheckCircle2, 
-  Copy, 
+import {
+  Building2,
+  MapPin,
+  Layers,
+  CheckCircle2,
+  Copy,
   ChevronLeft,
   ChevronRight,
   Scan,
@@ -165,7 +165,7 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
 
       {/* When Collapsed: Vertical Title */}
       {isCollapsed && (
-        <div 
+        <div
           onClick={() => setIsCollapsed(false)}
           style={{
             flex: 1,
@@ -194,7 +194,7 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
           flexDirection: 'column'
         }}>
           {/* Active Room Title Banner */}
-          <div style={{ 
+          <div style={{
             padding: '12px 16px 8px 16px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
             backgroundColor: 'rgba(30, 41, 59, 0.3)'
@@ -207,7 +207,7 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
                 {cadastre.wing}
               </span>
             </div>
-            
+
             <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '3px 0 1px 0', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span>Room {cadastre.roomCode}</span>
               <span style={{ fontSize: '11px', fontWeight: 600, color: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
@@ -237,16 +237,16 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ color: '#94a3b8', fontSize: '9.5px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
-                  1. 14-DIGIT ULPIN (BUILDING IDENTIFIER):
+                  1. 2d ULPIN ID (Land ID):
                 </span>
                 <button
                   onClick={handleCopy}
-                  style={{ 
-                    background: 'rgba(255,255,255,0.06)', 
-                    border: '1px solid rgba(255,255,255,0.15)', 
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.15)',
                     borderRadius: '4px',
-                    color: copied ? '#4ade80' : '#94a3b8', 
-                    cursor: 'pointer', 
+                    color: copied ? '#4ade80' : '#94a3b8',
+                    cursor: 'pointer',
                     padding: '2px 6px',
                     display: 'flex',
                     alignItems: 'center',
@@ -276,7 +276,7 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
             {/* 2. Building & Room Unit Number */}
             <div>
               <span style={{ color: '#94a3b8', fontSize: '9.5px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
-                2. BUILDING & ROOM UNIT NUMBER:
+                2. 3D ulpin id (Appartment ID):
               </span>
               <div style={{ fontSize: '15px', fontWeight: 800, color: '#a7f3d0', marginTop: '3px', fontFamily: 'monospace', letterSpacing: '0.5px' }}>
                 {cadastre.buildingUnitId}
@@ -450,7 +450,7 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
                     cursor: 'pointer'
                   }}
                 >
-                  {f === 'all' ? 'All (G+4)' : f === '0' ? 'Ground' : `L${parseInt(f)+1}`}
+                  {f === 'all' ? 'All (G+4)' : f === '0' ? 'Ground' : `L${parseInt(f) + 1}`}
                 </button>
               ))}
             </div>
