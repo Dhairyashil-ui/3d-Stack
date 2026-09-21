@@ -17,8 +17,13 @@
     "@mediapipe/tasks-vision": "^1.0.1",
     "@turf/turf": "^7.4.0",
     "@types/leaflet": "^1.9.22",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@types/three": "^0.185.4",
+    "@vitejs/plugin-react": "^6.1.0",
     "cors": "^2.8.6",
+    "esbuild": "^0.28.2",
     "express": "^5.2.1",
     "jspdf": "^4.2.1",
     "leaflet": "^1.9.4",
@@ -26,16 +31,11 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3",
-    "three": "^0.185.1"
-  },
-  "devDependencies": {
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^6.1.0",
-    "esbuild": "^0.28.2",
-    "oxlint": "^1.79.0",
+    "three": "^0.185.1",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
+  },
+  "devDependencies": {
+    "oxlint": "^1.79.0"
   }
 }
