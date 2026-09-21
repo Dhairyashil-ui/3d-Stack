@@ -7,6 +7,9 @@
     "dev": "vite",
     "start": "vite",
     "build": "tsc -b && vite build",
+    "build:server": "esbuild server/server.ts --platform=node --bundle --packages=external --format=esm --outfile=dist-server/index.js",
+    "build:all": "npm run build && npm run build:server",
+    "start:server": "node dist-server/index.js",
     "lint": "oxlint",
     "preview": "vite preview"
   },
@@ -30,6 +33,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "esbuild": "^0.28.2",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"

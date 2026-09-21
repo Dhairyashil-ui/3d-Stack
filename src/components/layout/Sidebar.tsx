@@ -31,7 +31,8 @@ import {
   Eye,
   Camera,
   Layers2,
-  CheckCircle2
+  CheckCircle2,
+  Inbox
 } from 'lucide-react';
 import { mockStore } from '../../data/mockStore';
 
@@ -537,14 +538,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
               {!collapsed && <span>Dashboard</span>}
             </NavLink>
 
-            {/* 3. Create/Manage Committee */}
+            {/* 3. Package Reception & Survey Assignment (Replaced Create Committee) */}
             <NavLink
               to="/ulb/committee-formation"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               style={({ isActive }) => getLinkStyle(isActive)}
             >
-              <Users size={18} />
-              {!collapsed && <span>Create/Manage Committee</span>}
+              <Inbox size={18} />
+              {!collapsed && <span>Package Reception & Survey Team</span>}
             </NavLink>
 
             {/* 4. Create Survey Unit */}

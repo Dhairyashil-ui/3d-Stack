@@ -291,23 +291,23 @@ export const DEFAULT_ADMIN_HIERARCHY: AdministrativeHierarchy = {
 
 export const PRECONFIGURED_CADASTRAL_PLOTS: CadastralPlot[] = [
   {
-    id: 'PLOT_42_1',
-    plotNumber: 'Plot 42/1',
+    id: 'PPCRC_HINJAWADI',
+    plotNumber: 'Plot P-14/1 (PPCRC Building)',
     surveyNumber: '42',
     hissaNumber: '1',
-    ownerName: 'Maharashtra Industrial Development Corp (MIDC) & IT Promoters Ltd',
+    ownerName: 'Pralhad P. Chhabria Research Center (PPCRC) / Hope Foundation & I²IT',
     khataNumber: 'KH-8841/2026',
     areaSqm: 14250.75,
     areaHectares: 1.425,
     category: 'Commercial / IT',
     adminHierarchy: DEFAULT_ADMIN_HIERARCHY,
-    // Carefully calibrated polygon so centroid is exactly 18.520430, 73.856744
+    // Exact calibrated polygon for PPCRC building footprint: centroid = 18.520430, 73.856744
     vertices: [
-      { lat: 18.521230, lon: 73.855944, label: 'V1 (NW)' },
-      { lat: 18.521330, lon: 73.857444, label: 'V2 (NE)' },
-      { lat: 18.519830, lon: 73.857644, label: 'V3 (SE)' },
-      { lat: 18.519430, lon: 73.856044, label: 'V4 (SW)' },
-      { lat: 18.520330, lon: 73.855744, label: 'V5 (W)' },
+      { lat: 18.521230, lon: 73.855944, label: 'V1 (NW - Main Gate)' },
+      { lat: 18.521330, lon: 73.857444, label: 'V2 (NE - Academic Block)' },
+      { lat: 18.519830, lon: 73.857644, label: 'V3 (SE - Robotics Wing)' },
+      { lat: 18.519430, lon: 73.856044, label: 'V4 (SW - HPC Lab Quad)' },
+      { lat: 18.520330, lon: 73.855744, label: 'V5 (W - Innovation Hub)' },
     ]
   },
   {

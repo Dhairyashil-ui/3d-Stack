@@ -923,52 +923,9 @@ export const PublicPortalPage: React.FC = () => {
                 >
                   Tracking
                 </Link>
-                <div style={{ height: '1px', backgroundColor: '#e2e8f0', margin: '4px 0' }} />
-                <Link
-                  to="/bhunaksha"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 16px',
-                    color: '#0369a1',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    backgroundColor: '#f0fdf4'
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#dcfce7')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f0fdf4')}
-                >
-                  <span>BhuNaksha ULPIN Engine</span>
-                  <span style={{ fontSize: '10px', backgroundColor: '#15803d', color: '#ffffff', padding: '1px 5px', borderRadius: '3px', fontWeight: 700 }}>1-Click</span>
-                </Link>
               </div>
             )}
           </div>
-
-          {/* Standalone BhuNaksha Portal Direct Button */}
-          <Link
-            to="/bhunaksha"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              backgroundColor: '#eff6ff',
-              color: '#1e40af',
-              border: '1px solid #bfdbfe',
-              borderRadius: '6px',
-              fontWeight: 700,
-              fontSize: '12.5px',
-              textDecoration: 'none',
-              margin: '0 4px',
-              boxShadow: '0 1px 2px rgba(30, 64, 175, 0.08)'
-            }}
-          >
-            <span>⚡ BhuNaksha ULPIN Engine</span>
-            <span style={{ fontSize: '9.5px', backgroundColor: '#16a34a', color: '#ffffff', padding: '1px 5px', borderRadius: '3px' }}>1-Click</span>
-          </Link>
 
           {/* Dashboard Dropdown */}
           <div

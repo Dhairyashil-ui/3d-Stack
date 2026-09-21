@@ -42,7 +42,7 @@ interface PropertyDetailsPanelProps {
 }
 
 export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
-  roomNumber = 'A-119',
+  roomNumber = 'A-101',
   onRoomSelect,
   onDisplayModeChange,
   currentDisplayMode,

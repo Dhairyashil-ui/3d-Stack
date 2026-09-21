@@ -1,493 +1,478 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
-import { RealGisMap } from '../../components/common/RealGisMap';
-import { JurisdictionFilterBar, JurisdictionSelection } from '../../components/common/JurisdictionFilterBar';
-import { CURRENT_SURVEYOR_DEFAULT, NAKSHA_JURISDICTION_HIERARCHY } from '../../data/jurisdictionData';
-import { markPlotMappingCompleted } from '../../data/plotBuildingUlpinRegister';
 import {
-  Search,
-  Eye,
-  X,
-  FileSpreadsheet,
-  CheckCircle,
-  MapPin,
+  PpcrcPipelineService,
+  PpcrcPipelineState,
+  DEFAULT_OFFLINE_CHECKPOINTS,
+  OfflineCheckpoint
+} from '../../services/ppcrcPipelineService';
+import {
+  Users,
+  Building2,
+  FileCheck2,
   CheckCircle2,
-  Calendar,
+  CheckSquare,
+  Square,
+  Send,
+  ExternalLink,
+  ShieldCheck,
+  HardDrive,
+  Box,
   Layers,
+  ChevronRight,
+  Phone,
   Sparkles,
-  ArrowLeft
+  Eye,
+  Activity
 } from 'lucide-react';
 
 export const MapImageVerificationPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const targetPlot = searchParams.get('plot');
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [pipelineState, setPipelineState] = useState<PpcrcPipelineState>(PpcrcPipelineService.getState());
+  const [checkpoints, setCheckpoints] = useState<OfflineCheckpoint[]>(
+    pipelineState.offlineCheckpoints || DEFAULT_OFFLINE_CHECKPOINTS
+  );
+  const [isSubmittingToUlb, setIsSubmittingToUlb] = useState(false);
+  const [submittedToUlb, setSubmittedToUlb] = useState(
+    pipelineState.stage === 'SURVEYOR_VERIFIED' ||
+    pipelineState.stage === 'ULB_SUBMITTED_TO_BHUNAKSHA' ||
+    pipelineState.stage === 'BHUNAKSHA_ULPIN_ASSIGNED'
+  );
 
-  // Jurisdiction selection state matching Image 1
-  const [jurisdiction, setJurisdiction] = useState<JurisdictionSelection>({
-    state: CURRENT_SURVEYOR_DEFAULT.state,
-    district: CURRENT_SURVEYOR_DEFAULT.district,
-    ulb: CURRENT_SURVEYOR_DEFAULT.ulb,
-    wardVillage: CURRENT_SURVEYOR_DEFAULT.wardVillage,
-    surveyUnit: CURRENT_SURVEYOR_DEFAULT.surveyUnit,
-    surveyUnitCode: CURRENT_SURVEYOR_DEFAULT.surveyUnitCode
-  });
+  useEffect(() => {
+    const handleUpdate = () => {
+      const state = PpcrcPipelineService.getState();
+      setPipelineState(state);
+      setCheckpoints(state.offlineCheckpoints || DEFAULT_OFFLINE_CHECKPOINTS);
+      if (
+        state.stage === 'SURVEYOR_VERIFIED' ||
+        state.stage === 'ULB_SUBMITTED_TO_BHUNAKSHA' ||
+        state.stage === 'BHUNAKSHA_ULPIN_ASSIGNED'
+      ) {
+        setSubmittedToUlb(true);
+      }
+    };
+    window.addEventListener('ppcrc_pipeline_updated', handleUpdate);
+    return () => window.removeEventListener('ppcrc_pipeline_updated', handleUpdate);
+  }, []);
 
-  const [tableSearchTerm, setTableSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [viewModalOpen, setViewModalOpen] = useState(false);
-
-  // Dynamic table data matching selected survey unit
-  const stateObj = NAKSHA_JURISDICTION_HIERARCHY.find(s => s.name === jurisdiction.state);
-  const districtObj = stateObj?.districts.find(d => d.name === jurisdiction.district);
-  const ulbObj = districtObj?.ulbs.find(u => u.name === jurisdiction.ulb);
-  const villageObj = ulbObj?.villages.find(v => v.name === jurisdiction.wardVillage);
-  const currentSurveyUnitObj = villageObj?.surveyUnits.find(su => su.name === jurisdiction.surveyUnit) || villageObj?.surveyUnits[0];
-
-  const handleSearch = (sel: JurisdictionSelection) => {
-    setJurisdiction(sel);
+  // Toggle single checkpoint
+  const toggleCheckpoint = (id: string) => {
+    setCheckpoints(prev =>
+      prev.map(chk => (chk.id === id ? { ...chk, verified: !chk.verified } : chk))
+    );
   };
 
-  const handleClear = () => {
-    setJurisdiction({
-      state: CURRENT_SURVEYOR_DEFAULT.state,
-      district: CURRENT_SURVEYOR_DEFAULT.district,
-      ulb: CURRENT_SURVEYOR_DEFAULT.ulb,
-      wardVillage: CURRENT_SURVEYOR_DEFAULT.wardVillage,
-      surveyUnit: CURRENT_SURVEYOR_DEFAULT.surveyUnit,
-      surveyUnitCode: CURRENT_SURVEYOR_DEFAULT.surveyUnitCode
-    });
-    setTableSearchTerm('');
+  // Toggle all checkpoints
+  const handleVerifyAll = () => {
+    setCheckpoints(prev => prev.map(chk => ({ ...chk, verified: true })));
   };
+
+  // Submit to ULB (Manage Publication)
+  const handleSubmitToUlb = () => {
+    setIsSubmittingToUlb(true);
+    setTimeout(() => {
+      PpcrcPipelineService.submitSurveyorVerification(checkpoints);
+      setIsSubmittingToUlb(false);
+      setSubmittedToUlb(true);
+    }, 600);
+  };
+
+  const allVerified = checkpoints.every(c => c.verified);
+  const verifiedCount = checkpoints.filter(c => c.verified).length;
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Breadcrumb matching Image 1 */}
-      <Breadcrumb items={[{ label: 'Home', link: '/surveyor/home' }, { label: 'Map & Image Verification' }]} />
+    <div
+      style={{
+        maxWidth: '1440px',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}
+    >
+      {/* 1. BREADCRUMB */}
+      <Breadcrumb
+        items={[
+          { label: 'Home', link: '/surveyor/home' },
+          { label: 'Survey Activities', link: '/surveyor/survey-activities' },
+          { label: 'Offline Ground-Truthing & Verification' }
+        ]}
+      />
 
-      {/* Pending Work Task Banner when redirected for a specific plot */}
-      {targetPlot && !isCompleted && (
-        <div style={{
-          backgroundColor: '#eff6ff',
-          border: '1.5px solid #3b82f6',
-          borderRadius: '8px',
-          padding: '12px 18px',
+      {/* 2. HEADER MISSION BANNER */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '20px 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Sparkles size={22} color="#2563eb" />
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '13.5px', color: '#1e40af' }}>
-                🎯 Active Mapping Task: Verify Drone Orthophoto & Satellite Image Alignment for Plot {targetPlot}
-              </div>
-              <div style={{ fontSize: '12px', color: '#3b82f6' }}>
-                Inspect the 3.5cm drone imagery in Hinjawadi SU-01 and click Approve to finalize cadastral mapping.
-              </div>
+          gap: '14px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '8px',
+              backgroundColor: '#1e40af',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Activity size={22} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Survey Activities: PPCRC Building Field Ground-Truthing
+              </h1>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  backgroundColor: '#dbeafe',
+                  color: '#1e40af',
+                  padding: '2px 8px',
+                  borderRadius: '10px'
+                }}
+              >
+                MISSION ACTIVE
+              </span>
+            </div>
+            <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>
+              Target: <strong>Pralhad P. Chhabria Research Center (PPCRC)</strong> • Plot B-7 / Survey No. 88, Hinjawadi Phase 1, Pune
             </div>
           </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
-            onClick={() => {
-              markPlotMappingCompleted(targetPlot);
-              setIsCompleted(true);
-            }}
+            onClick={() => navigate('/surveyor/three-d-viewer')}
             style={{
-              backgroundColor: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              padding: '8px 18px',
-              borderRadius: '6px',
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)'
-            }}
-          >
-            <CheckCircle2 size={16} />
-            <span>Approve & Complete Mapping</span>
-          </button>
-        </div>
-      )}
-
-      {isCompleted && (
-        <div style={{
-          backgroundColor: '#ecfdf5',
-          border: '1.5px solid #10b981',
-          borderRadius: '8px',
-          padding: '12px 18px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <CheckCircle size={22} color="#059669" />
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '14px', color: '#065f46' }}>
-                🎉 Drone Orthophoto Verified & Mapping Completed for Plot {targetPlot}!
-              </div>
-              <div style={{ fontSize: '12px', color: '#047857' }}>
-                Cadastral imagery alignment approved and recorded into PMRDA Hinjawadi SU-01 register.
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/surveyor/upload-gt-points?tab=unmappedPlots')}
-            style={{
-              backgroundColor: '#059669',
-              color: '#ffffff',
-              border: 'none',
-              padding: '8px 18px',
+              padding: '8px 14px',
+              backgroundColor: '#f8fafc',
+              color: '#1e40af',
+              border: '1px solid #bfdbfe',
               borderRadius: '6px',
               fontSize: '12.5px',
               fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
+              cursor: 'pointer'
             }}
           >
-            <span>Return to Mapping Register</span>
-            <ArrowLeft size={14} style={{ transform: 'rotate(180deg)' }} />
+            <Eye size={14} />
+            <span>Open 3D Digital Twin Viewer</span>
           </button>
         </div>
-      )}
+      </div>
 
-      {/* Top Title Bar with "Verify Map & Image" button matching Image 1 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h2 style={{ fontSize: '19px', fontWeight: 700, color: '#1e293b', margin: 0 }}>
-            Map & Image Verification
-          </h2>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>
-            Surveyor Target Jurisdiction: <b>{jurisdiction.ulb}</b> • <b>{jurisdiction.wardVillage}</b>
+      {/* 3. SECTION 1: ASSIGNED TEAM DETAILS */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '20px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Users size={18} color="#1b539c" />
+            <span style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b' }}>
+              1. Assigned Survey Team Details (from ULB Admin)
+            </span>
+          </div>
+          <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: 700 }}>
+            Lead Officer: Er. Rajeshwar D. Deshmukh
           </span>
         </div>
 
-        <button
-          onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
-          style={{
-            backgroundColor: '#1976d2',
-            color: '#ffffff',
-            border: 'none',
-            padding: '9px 22px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(25, 118, 210, 0.35)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          {viewMode === 'list' ? (
-            <>
-              <Layers size={16} />
-              <span>Verify Map & Image</span>
-            </>
-          ) : (
-            <span>Back to Verification Table</span>
-          )}
-        </button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+          {pipelineState.surveyTeam.map(member => (
+            <div
+              key={member.id}
+              style={{
+                backgroundColor: member.isMainOfficer ? '#f0fdf4' : '#f8fafc',
+                border: member.isMainOfficer ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '12px 14px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                  {member.name}
+                </span>
+                {member.isMainOfficer && (
+                  <span
+                    style={{
+                      backgroundColor: '#16a34a',
+                      color: '#ffffff',
+                      fontSize: '9.5px',
+                      fontWeight: 800,
+                      padding: '2px 6px',
+                      borderRadius: '8px',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Main Officer
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: '11.5px', color: '#1e40af', fontWeight: 600 }}>
+                {member.role}
+              </div>
+              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                Reg: {member.licenseOrReg} • {member.contact}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {viewMode === 'list' ? (
-        <>
-          {/* Dropdown Filter Bar matching Image 1 exactly */}
-          <JurisdictionFilterBar
-            initialValues={jurisdiction}
-            onSearch={handleSearch}
-            onClear={handleClear}
-            onChange={(sel) => setJurisdiction(sel)}
-            showButtons={true}
-          />
-
-          {/* Verification Records Table Card matching Image 1 */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '8px',
-            border: '1px solid #e2e8f0',
-            overflow: 'hidden',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
-          }}>
-            {/* Table Top Bar with Search & Excel Export */}
-            <div style={{
-              padding: '14px 20px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderBottom: '1px solid #f1f5f9'
-            }}>
-              <div style={{
-                position: 'relative',
-                width: '320px'
-              }}>
-                <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                <input
-                  type="text"
-                  placeholder="Search by Survey Unit or ID..."
-                  value={tableSearchTerm}
-                  onChange={(e) => setTableSearchTerm(e.target.value)}
-                  style={{
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '20px',
-                    padding: '7px 14px 7px 36px',
-                    fontSize: '13px',
-                    width: '100%',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '12px', color: '#64748b' }}>
-                  Showing <b>1</b> record
-                </span>
-                <button
-                  title="Export to Excel"
-                  onClick={() => alert('Exporting Map & Image Verification log to Excel...')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '4px' }}
-                >
-                  <FileSpreadsheet size={22} />
-                </button>
-              </div>
-            </div>
-
-            {/* Table with Header matching Image 1 */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#29b6f6', color: '#ffffff', textAlign: 'left' }}>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>S.No</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>ULB Name</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>Survey Unit</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>Survey Unit Id</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>Date & time of Approval</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>Map Status</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700 }}>Image Status</th>
-                    <th style={{ padding: '11px 16px', fontWeight: 700, textAlign: 'center' }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: '#ffffff' }}>
-                    <td style={{ padding: '14px 16px', color: '#334155', fontWeight: 600 }}>1</td>
-                    <td style={{ padding: '14px 16px', color: '#1e293b', fontWeight: 600 }}>{jurisdiction.ulb}</td>
-                    <td style={{ padding: '14px 16px', color: '#0369a1', fontWeight: 700 }}>{currentSurveyUnitObj?.name.split('-')[0].trim() || 'Survey Unit 01'}</td>
-                    <td style={{ padding: '14px 16px', color: '#334155', fontFamily: 'monospace', fontWeight: 700 }}>{currentSurveyUnitObj?.code || '348671'}</td>
-                    <td style={{ padding: '14px 16px', color: '#475569' }}>{currentSurveyUnitObj?.approvalDate || '20 08 2026 11:30 AM'}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{
-                        backgroundColor: '#dcfce7',
-                        color: '#15803d',
-                        padding: '3px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11.5px',
-                        fontWeight: 700
-                      }}>
-                        {currentSurveyUnitObj?.mapStatus || 'Approved'} (Remark)
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{
-                        backgroundColor: '#dcfce7',
-                        color: '#15803d',
-                        padding: '3px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11.5px',
-                        fontWeight: 700
-                      }}>
-                        {currentSurveyUnitObj?.imageStatus || 'Approved'} (Remark)
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                      <button
-                        onClick={() => setViewModalOpen(true)}
-                        title="View Verification Details"
-                        style={{
-                          background: '#eff6ff',
-                          border: '1px solid #bfdbfe',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          color: '#1976d2',
-                          padding: '6px 10px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          fontWeight: 600,
-                          fontSize: '12px'
-                        }}
-                      >
-                        <Eye size={15} />
-                        <span>View</span>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination / Record info footer */}
-            <div style={{
-              padding: '12px 20px',
-              backgroundColor: '#fafafa',
-              borderTop: '1px solid #f1f5f9',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '12px',
-              color: '#64748b'
-            }}>
-              <span>Items per page: <b>10</b></span>
-              <span>1 – 1 of 1</span>
-            </div>
-          </div>
-        </>
-      ) : (
-        /* Real Interactive GIS Map with Official Boundaries */
-        <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
-          <RealGisMap height="calc(100vh - 210px)" />
-        </div>
-      )}
-
-      {/* Modal: View Image & Verification Data */}
-      {viewModalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      {/* 4. SECTION 2: RECEIVED FILES DETAILS */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '20px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '20px'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '10px',
-            width: '100%',
-            maxWidth: '680px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25)',
-            overflow: 'hidden'
-          }}>
-            {/* Header */}
-            <div style={{
-              backgroundColor: '#1976d2',
-              color: '#ffffff',
-              padding: '14px 22px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={20} />
-                <span style={{ fontSize: '15px', fontWeight: 700 }}>View Image & Verification Data</span>
+          flexDirection: 'column',
+          gap: '14px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <HardDrive size={18} color="#1b539c" />
+            <span style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b' }}>
+              2. Received Package Files for PPCRC Building (Ready for Ground Truthing)
+            </span>
+          </div>
+          <span style={{ fontSize: '12px', color: '#64748b' }}>
+            All 4 Packages Ingested & Calibrated
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+          {pipelineState.desktopPackages.map(pkg => (
+            <div
+              key={pkg.id}
+              style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '14px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 800, color: '#0f172a' }}>
+                  {pkg.name}
+                </span>
+                <code style={{ fontSize: '11px', color: '#0284c7', backgroundColor: '#e0f2fe', padding: '1px 6px', borderRadius: '4px' }}>
+                  {pkg.extension}
+                </code>
               </div>
-              <button
-                onClick={() => setViewModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '2px' }}
-              >
-                <X size={18} />
-              </button>
+              <div style={{ fontSize: '11.5px', color: '#475569', fontFamily: 'monospace' }}>
+                {pkg.fileName}
+              </div>
+              <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Size: {pkg.fileSize}</span>
+                <span style={{ color: '#16a34a', fontWeight: 600 }}>✓ Verified Ingest</span>
+              </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Content matching Official Portal */}
-            <div style={{ padding: '24px' }}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '14px'
-              }}>
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>ULB Name</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginTop: '2px' }}>{jurisdiction.ulb}</div>
+      {/* 5. SECTION 3: CHECKPOINTS FOR OFFLINE VERIFICATIONS */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1.5px solid #cbd5e1',
+          padding: '24px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '18px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>
+              3. Mandatory Checkpoints for Offline Ground-Truthing
+            </div>
+            <div style={{ fontSize: '12.5px', color: '#64748b' }}>
+              Field Surveyor Er. Rajeshwar D. Deshmukh must certify all 5 inspection points against physical site conditions.
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: allVerified ? '#15803d' : '#d97706' }}>
+              {verifiedCount} of 5 Checkpoints Certified
+            </span>
+            {!allVerified && (
+              <button
+                onClick={handleVerifyAll}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#f1f5f9',
+                  color: '#1e40af',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Certify All Checkpoints
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Checkbox List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {checkpoints.map((chk) => (
+            <div
+              key={chk.id}
+              onClick={() => toggleCheckpoint(chk.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '14px',
+                padding: '14px 18px',
+                backgroundColor: chk.verified ? '#f0fdf4' : '#ffffff',
+                border: chk.verified ? '1.5px solid #86efac' : '1px solid #cbd5e1',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{ marginTop: '2px', color: chk.verified ? '#16a34a' : '#94a3b8' }}>
+                {chk.verified ? <CheckSquare size={20} /> : <Square size={20} />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                  {chk.title}
                 </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>LGD Code / Survey Unit ID</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginTop: '2px' }}>{currentSurveyUnitObj?.code || '348671'}</div>
+                <div style={{ fontSize: '12.5px', color: '#475569', marginTop: '3px', lineHeight: '1.4' }}>
+                  {chk.description}
                 </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Survey Unit Name</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0369a1', marginTop: '2px' }}>{currentSurveyUnitObj?.name || 'Survey Unit 01'}</div>
-                </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Date & Time Of Approval</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginTop: '2px' }}>{currentSurveyUnitObj?.approvalDate || '20 08 2026 11:30 AM'}</div>
-                </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Map Status</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#16a34a', marginTop: '2px' }}>Approved (PMRDA Cadastral Verified)</div>
-                </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Image Status</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#16a34a', marginTop: '2px' }}>Approved (Drone LiDAR 3.5cm GSD Verified)</div>
+                <div style={{ fontSize: '11px', color: '#0284c7', marginTop: '4px', fontWeight: 600 }}>
+                  Standard Compliance: {chk.standard}
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
 
-              {/* Remarks Box */}
-              <div style={{ marginTop: '16px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '12px 16px' }}>
-                <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#1e40af' }}>Surveyor Verification Remarks:</div>
-                <div style={{ fontSize: '12.5px', color: '#1e3a8a', marginTop: '4px' }}>
-                  Drone photogrammetric orthomosaic and LiDAR point cloud verified against DGPS RTK ground control points in Hinjawadi Phase 1. 317 building footprints and 46 parcels strictly delineated.
-                </div>
+        {/* 3D BUILDING FILE & TRANSMISSION SECTION */}
+        <div
+          style={{
+            backgroundColor: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '14px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Box size={22} color="#0284c7" />
+            <div>
+              <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
+                3D Building Digital Twin Model: <code>final_full_building.glb</code> (7.56 MB)
               </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
-                <button
-                  onClick={() => { setViewModalOpen(false); setViewMode('map'); }}
-                  style={{
-                    backgroundColor: '#1976d2',
-                    color: '#ffffff',
-                    border: 'none',
-                    padding: '8px 20px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <Layers size={15} />
-                  <span>Inspect Map Directly</span>
-                </button>
-
-                <button
-                  onClick={() => setViewModalOpen(false)}
-                  style={{
-                    backgroundColor: '#f1f5f9',
-                    color: '#475569',
-                    border: '1px solid #cbd5e1',
-                    padding: '8px 22px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Close
-                </button>
+              <div style={{ fontSize: '11.5px', color: '#64748b' }}>
+                RCC G+5 Floors • 45 Research Units • Room A-119 HPC Lab • Centroid 18.520430, 73.856744
               </div>
             </div>
           </div>
+
+          <button
+            onClick={handleSubmitToUlb}
+            disabled={!allVerified || isSubmittingToUlb}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: allVerified ? '#16a34a' : '#94a3b8',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 800,
+              cursor: allVerified && !isSubmittingToUlb ? 'pointer' : 'not-allowed',
+              boxShadow: allVerified ? '0 4px 12px rgba(22, 163, 74, 0.3)' : 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Send size={16} />
+            <span>
+              {isSubmittingToUlb ? 'Transmitting to ULB...' : 'Submit to ULB (Manage Publication) →'}
+            </span>
+          </button>
         </div>
-      )}
+
+        {/* SUCCESS CONFIRMATION MODAL / BANNER */}
+        {submittedToUlb && (
+          <div
+            style={{
+              backgroundColor: '#ecfdf5',
+              border: '1.5px solid #34d399',
+              borderRadius: '8px',
+              padding: '18px 22px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '14px',
+              animation: 'fadeIn 0.2s ease'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <CheckCircle2 size={24} color="#059669" />
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#065f46' }}>
+                  Ground-Truthing & 3D Building Successfully Submitted to ULB!
+                </div>
+                <div style={{ fontSize: '12.5px', color: '#047857' }}>
+                  Results of the 5 offline checkpoints and 3D digital model are now verified and sealed for PMRDA Urban Survey Publication.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

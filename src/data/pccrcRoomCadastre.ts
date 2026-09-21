@@ -266,8 +266,65 @@ for (let f = 1; f <= 5; f++) {
   }
 }
 
+// Authoritative Cadastre Record for Room 101 (Building Unit ID: 0089-01-01-101)
+export const ROOM_101_CADASTRE: RoomCadastreRecord = {
+  roomCode: 'A-101',
+  floorNumber: 1,
+  floorLabel: 'Level 1 (Ground Floor Atrium Tier)',
+  ulpin14: '27250401420089',
+  ulpinFormatted: '27-25-04-0142-0089',
+  stateCode: '27',
+  districtCode: '25',
+  talukaCode: '04',
+  villageCode: '0142',
+  buildingNum4: '0089',
+  buildingUnitId: '0089-01-01-101',
+  floorNum2: '01',
+  areaNum2: '01',
+  roomNum3: '101',
+  roomName: 'High-Performance Computing Research Lab (Room 101)',
+  wing: 'West Academic Wing',
+  latitude: 18.584892,
+  longitude: 73.737694,
+  elevationMsl: 568.20,
+  heightAboveGround: 0.0,
+  gnssFixQuality: 'RTK Fixed (DGPS Station PMRDA-01, ±0.012m)',
+  pdop: 0.82,
+  crs: 'EPSG:4326 (WGS 84) / UTM Zone 43N',
+  carpetAreaSqFt: 737,
+  carpetAreaSqM: 68.5,
+  ceilingHeightM: 3.40,
+  occupancyType: 'Institutional / Research Lab',
+  doorType: 'Double Beech Leaf • Vision Glazing • Hydraulic Closer • Stainless Pull Handles',
+  fireNocStatus: 'Verified Active (Break-Glass Call Point + Sprinklers)',
+  floorSegmentation: PCCRC_FLOOR_SEGMENTATIONS[0],
+  doorVolume: {
+    widthM: 1.80,
+    heightM: 2.44,
+    depthM: 0.22,
+    volumeM3: 0.966
+  },
+  centerCloud: {
+    x: 11.47,
+    y: 1.23,
+    z: -7.40,
+    heightAboveFloor: 1.23,
+    elevationMsl: 569.43,
+    normalX: -1,
+    normalY: 0,
+    normalZ: 0,
+    safeDistanceM: 3.20,
+    pointCloudCount: 1420
+  }
+};
+
+PCCRC_ROOMS_CADASTRE.unshift(ROOM_101_CADASTRE);
+
 export const getRoomCadastre = (roomCode: string): RoomCadastreRecord => {
   const clean = roomCode.toUpperCase().replace(/\s+/g, '');
+  if (clean.includes('101')) {
+    return ROOM_101_CADASTRE;
+  }
   // Matches "A-119", "A119", "0089-01-01-119", or "119"
   const roomDigitsMatch = clean.match(/([1-5][0-9]{2})/);
   if (roomDigitsMatch) {
@@ -275,5 +332,5 @@ export const getRoomCadastre = (roomCode: string): RoomCadastreRecord => {
     const found = PCCRC_ROOMS_CADASTRE.find(r => r.roomNum3 === rNum);
     if (found) return found;
   }
-  return PCCRC_ROOMS_CADASTRE[8]; // Default to A-119
+  return ROOM_101_CADASTRE; // Default to Room 101
 };

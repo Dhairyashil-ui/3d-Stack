@@ -26,12 +26,12 @@ export const ThreeDViewerPage: React.FC = () => {
   const location = useLocation();
   // Input states: 14-Digit ULPIN and Building-Floor-Area-Room Unit ID
   const [ulpinInput, setUlpinInput] = useState('27250401420089');
-  const [buildingIdInput, setBuildingIdInput] = useState('0089-01-01-119');
+  const [buildingIdInput, setBuildingIdInput] = useState('0089-01-01-101');
   
   // Pipeline progression states
   // 'initial_map' -> 'zooming_to_prop' -> 'twin_active'
   const [appState, setAppState] = useState<'initial_map' | 'zooming_to_prop' | 'twin_active'>('initial_map');
-  const [targetRoom, setTargetRoom] = useState('A-119');
+  const [targetRoom, setTargetRoom] = useState('A-101');
   const [currentDisplayMode, setCurrentDisplayMode] = useState<DisplayMode>('realistic');
 
   // Search box minimization: after search, it shrinks into a small search icon in the corner
@@ -40,20 +40,20 @@ export const ThreeDViewerPage: React.FC = () => {
   // Property Details visibility: appears when camera reaches door without changing frame
   const [showDetailsPanel, setShowDetailsPanel] = useState(false);
 
-  // Parse room code from Building Unit ID (e.g. "0089-01-01-119" or "A-119" -> "A-119")
+  // Parse room code from Building Unit ID (e.g. "0089-01-01-101" or "A-101" -> "A-101")
   const parseRoomFromId = (input: string) => {
     const match = input.match(/([1-5][0-9]{2})/);
     if (match) {
       return `A-${match[1]}`;
     }
-    return 'A-119';
+    return 'A-101';
   };
 
-  // Direct URL Inspection (e.g. ?direct=1&room=A-119 or ?search=1)
+  // Direct URL Inspection (e.g. ?direct=1&room=A-101 or ?search=1)
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('search') === '1' || params.get('direct') === '1') {
-      const roomParam = params.get('room') || 'A-119';
+      const roomParam = params.get('room') || 'A-101';
       setTargetRoom(roomParam);
       setSearchMinimized(true);
       setShowDetailsPanel(false);
@@ -239,7 +239,7 @@ export const ThreeDViewerPage: React.FC = () => {
                   type="text"
                   value={buildingIdInput}
                   onChange={(e) => setBuildingIdInput(e.target.value)}
-                  placeholder="0089-01-01-119"
+                  placeholder="0089-01-01-101"
                   style={{
                     width: '100%',
                     padding: '6px 0',

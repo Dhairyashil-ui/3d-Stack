@@ -1,947 +1,789 @@
-import React, { useState } from 'react';
-import { 
-  Users, 
-  Search, 
-  Download, 
-  Eye, 
-  Edit3, 
-  Plus, 
-  ChevronDown, 
-  ChevronUp, 
-  FileText, 
-  Check, 
-  X,
-  FileSpreadsheet
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Inbox,
+  CheckCircle2,
+  Users,
+  Send,
+  Building2,
+  Shield,
+  ChevronRight,
+  Phone,
+  Sparkles,
+  UserCheck,
+  Check,
+  RotateCcw,
+  AlertCircle
 } from 'lucide-react';
+import {
+  PpcrcPipelineService,
+  PpcrcPipelineState,
+  SurveyTeamMember,
+  DEFAULT_SURVEY_TEAM
+} from '../../services/ppcrcPipelineService';
 
-interface CommitteeMember {
-  name: string;
-  mobile: string;
-  email: string;
-  department: string;
-  designation: string;
-}
+// Available Licensed Personnel for Selection
+const AVAILABLE_MAIN_OFFICERS = [
+  {
+    name: 'Er. Rajeshwar D. Deshmukh',
+    role: 'Chief Cadastral Surveyor & Land Records Officer (Main Officer)',
+    licenseOrReg: 'MH-SLR-PUNE-0081',
+    contact: '+91 98220 14592 | r.deshmukh@pmrda.gov.in'
+  },
+  {
+    name: 'Er. Sanjay K. Kulkarni',
+    role: 'Senior Superintending Land Records Officer',
+    licenseOrReg: 'MH-SLR-PUNE-0045',
+    contact: '+91 94220 55102 | s.kulkarni@pmrda.gov.in'
+  },
+  {
+    name: 'Er. Nitin S. Pawar',
+    role: 'Lead Cadastral Inspection Officer',
+    licenseOrReg: 'MH-SLR-PUNE-0099',
+    contact: '+91 98231 44091 | n.pawar@pmrda.gov.in'
+  }
+];
 
-interface CommitteeRecord {
-  id: string;
-  sNo: number;
-  district: string;
-  ulb: string;
-  committeeName: string;
-  headOfCommittee: string;
-  assistant: string;
-  surveyors: CommitteeMember[];
-  documentName: string;
-  createdBy: string;
-  createdOn: string;
-}
+const AVAILABLE_DRONE_PILOTS = [
+  {
+    name: 'Smt. Ananya K. Sharma',
+    role: 'Lead Drone Pilot & Photogrammetrist',
+    licenseOrReg: 'DGCA-RPA-9914/2024',
+    contact: '+91 98450 78210'
+  },
+  {
+    name: 'Shri Rohan V. Joshi',
+    role: 'Certified UAV Mapping Specialist',
+    licenseOrReg: 'DGCA-RPA-8821/2023',
+    contact: '+91 97654 33219'
+  }
+];
 
-const INITIAL_COMMITTEES: CommitteeRecord[] = [
+const AVAILABLE_GNSS_SURVEYORS = [
   {
-    id: 'comm-1',
-    sNo: 1,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Hinjawadi Phase 1 Survey Committee',
-    headOfCommittee: 'Rajesh Deshmukh (Addl. Collector, Pune)',
-    assistant: 'Snehal Patil (Town Planning Officer)',
-    surveyors: [
-      { name: 'Sanjay More', mobile: '9822014521', email: 'sanjay.more@maharashtra.gov.in', department: 'Land Records Pune', designation: 'Cadastral Surveyor' },
-      { name: 'Pooja Kulkarni', mobile: '9822098712', email: 'pooja.k@maharashtra.gov.in', department: 'PMRDA GIS Cell', designation: 'GIS Analyst' }
-    ],
-    documentName: 'PMRDA_HINJ_COMM_ORDER_01.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '23/07/2025 5:42:44 PM'
+    name: 'Shri Amit V. Patil',
+    role: 'Cadastral Surveyor (GNSS / RTK DGPS)',
+    licenseOrReg: 'MH-PMRDA-CAD-402',
+    contact: '+91 97631 88921'
   },
   {
-    id: 'comm-2',
-    sNo: 2,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Baner-Balewadi Survey Committee',
-    headOfCommittee: 'Anil Kadam (Deputy Collector, Land Records)',
-    assistant: 'Pravin Shinde (Assistant Director Town Planning)',
-    surveyors: [
-      { name: 'Rohan Joshi', mobile: '9823145621', email: 'rohan.j@pmc.gov.in', department: 'PMC Survey Branch', designation: 'Senior Surveyor' }
-    ],
-    documentName: 'PMC_BANER_COMM_ORDER_02.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '05/08/2025 4:33:51 PM'
+    name: 'Shri Amit Ghorpade',
+    role: 'DGPS Geodetic Baseline Surveyor',
+    licenseOrReg: 'MH-PMRDA-CAD-109',
+    contact: '+91 98221 77650'
+  }
+];
+
+const AVAILABLE_GIS_ANALYSTS = [
+  {
+    name: 'Er. Vikramaditya Joshi',
+    role: '3D GIS & LiDAR Point Cloud Analyst',
+    licenseOrReg: 'GIS-BIM-CERT-7731',
+    contact: '+91 99230 45112'
   },
   {
-    id: 'comm-3',
-    sNo: 3,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Kothrud Ward Survey Committee',
-    headOfCommittee: 'Vikas Gaikwad (Superintendent Land Records)',
-    assistant: 'Meera Rao (Junior Planner)',
-    surveyors: [
-      { name: 'Nitin Pawar', mobile: '9823908123', email: 'nitin.p@maharashtra.gov.in', department: 'Settlement & Land Records', designation: 'Survey Officer' }
-    ],
-    documentName: 'KOTHRUD_SURVEY_COMM_03.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '12/08/2025 11:11:35 AM'
+    name: 'Er. Pradeep R. Rao',
+    role: '3D Spatial Modeling & Mesh Specialist',
+    licenseOrReg: 'GIS-BIM-CERT-4412',
+    contact: '+91 98501 22910'
+  }
+];
+
+const AVAILABLE_ULB_REPRESENTATIVES = [
+  {
+    name: 'Shri Sunil M. Kulkarni',
+    role: 'ULB / PMRDA Town Planning Representative',
+    licenseOrReg: 'PMRDA-TPD-2022',
+    contact: '+91 94220 33410'
   },
   {
-    id: 'comm-4',
-    sNo: 4,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Shivajinagar Central Committee',
-    headOfCommittee: 'Dr. Suresh Mane (Joint Director Town Planning)',
-    assistant: 'Kiran Thite (Survey Inspector)',
-    surveyors: [
-      { name: 'Amit Ghorpade', mobile: '9822456789', email: 'amit.g@maharashtra.gov.in', department: 'Town Planning & Valuation', designation: 'Junior Surveyor' }
-    ],
-    documentName: 'SHIVAJINAGAR_SURVEY_04.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '18/08/2025 11:11:36 AM'
-  },
-  {
-    id: 'comm-5',
-    sNo: 5,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Viman Nagar IT Zone Committee',
-    headOfCommittee: 'Manisha Jagtap (Sub-Divisional Officer)',
-    assistant: 'Sachin Thorat (Tahsildar)',
-    surveyors: [
-      { name: 'Vijay Kamble', mobile: '9823334455', email: 'vijay.k@maharashtra.gov.in', department: 'Revenue Department', designation: 'Field Surveyor' }
-    ],
-    documentName: 'VIMANNAGAR_COMM_05.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '25/08/2025 11:15:30 AM'
-  },
-  {
-    id: 'comm-6',
-    sNo: 6,
-    district: 'Pune',
-    ulb: 'PMRDA Pune (270410)',
-    committeeName: 'Hadapsar Magarpatta Survey Committee',
-    headOfCommittee: 'Girish Patil (Addl. Director)',
-    assistant: 'Sunita Chavan (Planning Assistant)',
-    surveyors: [
-      { name: 'Sunil Jagtap', mobile: '9822119988', email: 'sunil.j@maharashtra.gov.in', department: 'PMRDA Town Planning', designation: 'Cadastral Surveyor' }
-    ],
-    documentName: 'HADAPSAR_COMM_06.pdf',
-    createdBy: 'ULB Pune Admin',
-    createdOn: '29/08/2025 11:32:09 AM'
+    name: 'Smt. Meena P. Deshpande',
+    role: 'PMRDA Urban Development Officer',
+    licenseOrReg: 'PMRDA-TPD-2019',
+    contact: '+91 94221 66781'
   }
 ];
 
 export const UlbCommitteeFormationPage: React.FC = () => {
-  const [committees, setCommittees] = useState<CommitteeRecord[]>(INITIAL_COMMITTEES);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUlb, setSelectedUlb] = useState('PMRDA Pune - 270410');
-  
-  // Modal states
-  const [modalOpen, setModalOpen] = useState(false);
-  const [viewRecord, setViewRecord] = useState<CommitteeRecord | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [pipelineState, setPipelineState] = useState<PpcrcPipelineState>(PpcrcPipelineService.getState());
 
-  // Form states
-  const [formCommitteeName, setFormCommitteeName] = useState('');
-  const [headOfCommittee, setHeadOfCommittee] = useState('Rajesh Deshmukh (Addl. Collector, Pune)');
-  const [assistant, setAssistant] = useState('Snehal Patil (Town Planning Officer)');
-  const [surveyors, setSurveyors] = useState<CommitteeMember[]>([
-    { name: '', mobile: '', email: '', department: '', designation: '' }
-  ]);
-  const [documentFile, setDocumentFile] = useState<string>('');
-  
-  // Accordion state inside modal
-  const [accordionState, setAccordionState] = useState<{ [key: string]: boolean }>({
-    head: true,
-    assistant: false,
-    surveyor: true
+  // Show selection mode when "Assign Survey Team" is clicked
+  const [showAssignSelector, setShowAssignSelector] = useState<boolean>(() => {
+    return (
+      pipelineState.stage === 'ULB_TEAM_ASSIGNED' ||
+      pipelineState.stage === 'SURVEYOR_VERIFIED' ||
+      pipelineState.stage === 'ULB_SUBMITTED_TO_BHUNAKSHA' ||
+      pipelineState.stage === 'BHUNAKSHA_ULPIN_ASSIGNED'
+    );
   });
 
-  const toggleAccordion = (key: string) => {
-    setAccordionState(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  // Selected members in selecting way
+  const [selectedMainOfficer, setSelectedMainOfficer] = useState(AVAILABLE_MAIN_OFFICERS[0].name);
+  const [selectedDronePilot, setSelectedDronePilot] = useState(AVAILABLE_DRONE_PILOTS[0].name);
+  const [selectedGnssSurveyor, setSelectedGnssSurveyor] = useState(AVAILABLE_GNSS_SURVEYORS[0].name);
+  const [selectedGisAnalyst, setSelectedGisAnalyst] = useState(AVAILABLE_GIS_ANALYSTS[0].name);
+  const [selectedUlbRep, setSelectedUlbRep] = useState(AVAILABLE_ULB_REPRESENTATIVES[0].name);
 
-  const expandAll = () => {
-    setAccordionState({ head: true, assistant: true, surveyor: true });
-  };
-
-  const collapseAll = () => {
-    setAccordionState({ head: false, assistant: false, surveyor: false });
-  };
-
-  const handleAddSurveyor = () => {
-    setSurveyors(prev => [...prev, { name: '', mobile: '', email: '', department: '', designation: '' }]);
-  };
-
-  const handleSurveyorChange = (index: number, field: keyof CommitteeMember, val: string) => {
-    setSurveyors(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: val };
-      return updated;
-    });
-  };
-
-  const openCreateModal = () => {
-    setIsEditing(false);
-    setEditingId(null);
-    setFormCommitteeName('');
-    setHeadOfCommittee('Rajesh Deshmukh (Addl. Collector, Pune)');
-    setAssistant('Snehal Patil (Town Planning Officer)');
-    setSurveyors([{ name: '', mobile: '', email: '', department: '', designation: '' }]);
-    setDocumentFile('');
-    setAccordionState({ head: true, assistant: false, surveyor: true });
-    setModalOpen(true);
-  };
-
-  const openEditModal = (rec: CommitteeRecord) => {
-    setIsEditing(true);
-    setEditingId(rec.id);
-    setFormCommitteeName(rec.committeeName);
-    setHeadOfCommittee(rec.headOfCommittee);
-    setAssistant(rec.assistant);
-    setSurveyors(rec.surveyors.length > 0 ? rec.surveyors : [{ name: '', mobile: '', email: '', department: '', designation: '' }]);
-    setDocumentFile(rec.documentName);
-    setAccordionState({ head: true, assistant: true, surveyor: true });
-    setModalOpen(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isEditing && editingId) {
-      setCommittees(prev => prev.map(item => {
-        if (item.id === editingId) {
-          return {
-            ...item,
-            committeeName: formCommitteeName || item.committeeName,
-            headOfCommittee,
-            assistant,
-            surveyors: surveyors.filter(s => s.name.trim() !== ''),
-            documentName: documentFile || item.documentName
-          };
-        }
-        return item;
-      }));
-    } else {
-      const newRec: CommitteeRecord = {
-        id: `comm-${Date.now()}`,
-        sNo: committees.length + 1,
-        district: 'Pune',
-        ulb: 'PMRDA Pune (270410)',
-        committeeName: formCommitteeName || `Pune Survey Committee ${committees.length + 1}`,
-        headOfCommittee,
-        assistant,
-        surveyors: surveyors.filter(s => s.name.trim() !== ''),
-        documentName: documentFile || 'COMM_FORMATION_ORDER.pdf',
-        createdBy: 'ULB Pune Admin',
-        createdOn: new Date().toLocaleString()
-      };
-      setCommittees(prev => [newRec, ...prev]);
-    }
-    setModalOpen(false);
-  };
-
-  const filtered = committees.filter(c => 
-    c.committeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.ulb.toLowerCase().includes(searchQuery.toLowerCase())
+  const [submittedToSurveyor, setSubmittedToSurveyor] = useState(
+    pipelineState.stage === 'ULB_TEAM_ASSIGNED' ||
+    pipelineState.stage === 'SURVEYOR_VERIFIED' ||
+    pipelineState.stage === 'ULB_SUBMITTED_TO_BHUNAKSHA' ||
+    pipelineState.stage === 'BHUNAKSHA_ULPIN_ASSIGNED'
   );
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      const state = PpcrcPipelineService.getState();
+      setPipelineState(state);
+      if (
+        state.stage === 'ULB_TEAM_ASSIGNED' ||
+        state.stage === 'SURVEYOR_VERIFIED' ||
+        state.stage === 'ULB_SUBMITTED_TO_BHUNAKSHA' ||
+        state.stage === 'BHUNAKSHA_ULPIN_ASSIGNED'
+      ) {
+        setShowAssignSelector(true);
+        setSubmittedToSurveyor(true);
+      }
+    };
+    window.addEventListener('ppcrc_pipeline_updated', handleUpdate);
+    return () => window.removeEventListener('ppcrc_pipeline_updated', handleUpdate);
+  }, []);
+
+  // Action: Open Selecting Way
+  const handleOpenAssignTeam = () => {
+    setShowAssignSelector(true);
+  };
+
+  // Action: Autofill Recommended Members
+  const handleAutofillMembers = () => {
+    setSelectedMainOfficer(AVAILABLE_MAIN_OFFICERS[0].name);
+    setSelectedDronePilot(AVAILABLE_DRONE_PILOTS[0].name);
+    setSelectedGnssSurveyor(AVAILABLE_GNSS_SURVEYORS[0].name);
+    setSelectedGisAnalyst(AVAILABLE_GIS_ANALYSTS[0].name);
+    setSelectedUlbRep(AVAILABLE_ULB_REPRESENTATIVES[0].name);
+  };
+
+  // Build active team list from user selections
+  const mainOff = AVAILABLE_MAIN_OFFICERS.find(o => o.name === selectedMainOfficer) || AVAILABLE_MAIN_OFFICERS[0];
+  const dronePil = AVAILABLE_DRONE_PILOTS.find(d => d.name === selectedDronePilot) || AVAILABLE_DRONE_PILOTS[0];
+  const gnssSurv = AVAILABLE_GNSS_SURVEYORS.find(g => g.name === selectedGnssSurveyor) || AVAILABLE_GNSS_SURVEYORS[0];
+  const gisAna = AVAILABLE_GIS_ANALYSTS.find(a => a.name === selectedGisAnalyst) || AVAILABLE_GIS_ANALYSTS[0];
+  const ulbRep = AVAILABLE_ULB_REPRESENTATIVES.find(u => u.name === selectedUlbRep) || AVAILABLE_ULB_REPRESENTATIVES[0];
+
+  const currentConstructedTeam: SurveyTeamMember[] = [
+    {
+      id: 'tm-1',
+      name: mainOff.name,
+      role: mainOff.role,
+      licenseOrReg: mainOff.licenseOrReg,
+      isMainOfficer: true,
+      contact: mainOff.contact
+    },
+    {
+      id: 'tm-2',
+      name: dronePil.name,
+      role: dronePil.role,
+      licenseOrReg: dronePil.licenseOrReg,
+      isMainOfficer: false,
+      contact: dronePil.contact
+    },
+    {
+      id: 'tm-3',
+      name: gnssSurv.name,
+      role: gnssSurv.role,
+      licenseOrReg: gnssSurv.licenseOrReg,
+      isMainOfficer: false,
+      contact: gnssSurv.contact
+    },
+    {
+      id: 'tm-4',
+      name: gisAna.name,
+      role: gisAna.role,
+      licenseOrReg: gisAna.licenseOrReg,
+      isMainOfficer: false,
+      contact: gisAna.contact
+    },
+    {
+      id: 'tm-5',
+      name: ulbRep.name,
+      role: ulbRep.role,
+      licenseOrReg: ulbRep.licenseOrReg,
+      isMainOfficer: false,
+      contact: ulbRep.contact
+    }
+  ];
+
+  // Action: Submit & Dispatch to Surveyor Portal
+  const handleSubmitToSurveyor = () => {
+    PpcrcPipelineService.assignSurveyTeam(currentConstructedTeam);
+    setSubmittedToSurveyor(true);
+  };
+
   return (
-    <div style={{
-      maxWidth: '1280px',
-      margin: '0 auto',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
-      {/* Breadcrumb matching frame 110s */}
+    <div
+      style={{
+        maxWidth: '1380px',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '22px',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}
+    >
+      {/* 1. BREADCRUMB */}
       <div style={{ fontSize: '12.5px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ color: '#1b539c', fontWeight: 600 }}>Home</span>
+        <span style={{ color: '#1b539c', cursor: 'pointer' }} onClick={() => navigate('/ulb/dashboard')}>
+          Home
+        </span>
         <span>›</span>
-        <span>Create/Manage Committee</span>
+        <span>Urban Local Body (ULB)</span>
+        <span>›</span>
+        <span style={{ fontWeight: 600, color: '#0f172a' }}>
+          Received Packages & Survey Team Assignment
+        </span>
       </div>
 
-      {/* Header with Title and Create Survey Committee Button matching frame 110s */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b', margin: 0 }}>
-          Create/Manage Committee
-        </h2>
-        <button
-          onClick={openCreateModal}
-          style={{
-            backgroundColor: '#1b539c',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '10px 20px',
-            fontSize: '13.5px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: '0 2px 6px rgba(27,83,156,0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <Plus size={16} />
-          <span>Create Survey Committee</span>
-        </button>
-      </div>
-
-      {/* Filter Bar Card matching video Frame 110s */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '10px',
-        border: '1px solid #e2e8f0',
-        padding: '20px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr auto auto',
-          gap: '16px',
-          alignItems: 'flex-end'
-        }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#64748b', marginBottom: '6px' }}>
-              District
-            </label>
-            <input
-              type="text"
-              readOnly
-              value="Pune"
+      {/* 2. HEADER BANNER */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
               style={{
-                width: '100%',
-                padding: '9px 12px',
+                width: '32px',
+                height: '32px',
                 borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                backgroundColor: '#f8fafc',
-                color: '#475569',
-                fontSize: '13px'
-              }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#64748b', marginBottom: '6px' }}>
-              Search By ULB
-            </label>
-            <select
-              value={selectedUlb}
-              onChange={(e) => setSelectedUlb(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '9px 12px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                backgroundColor: '#ffffff',
-                color: '#0f172a',
-                fontSize: '13px'
+                backgroundColor: '#1b539c',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff'
               }}
             >
-              <option value="PMRDA Pune - 270410">PMRDA Pune - 270410</option>
-              <option value="Pune Municipal Corporation (PMC) - 270411">Pune Municipal Corporation (PMC) - 270411</option>
-            </select>
+              <Inbox size={18} />
+            </div>
+            <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              Package Reception & Survey Team Assignment
+            </h1>
           </div>
+          <p style={{ margin: '4px 0 0 40px', fontSize: '13px', color: '#64748b' }}>
+            Authority: Pune Metropolitan Region Development Authority (PMRDA) • SU-HINJ-01 Cadastral Ward
+          </p>
+        </div>
 
-          <button
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span
             style={{
-              backgroundColor: '#1b539c',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '9px 24px',
-              fontSize: '13px',
+              fontSize: '12px',
               fontWeight: 700,
-              cursor: 'pointer'
+              padding: '6px 14px',
+              borderRadius: '20px',
+              backgroundColor: '#e0f2fe',
+              color: '#0369a1',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}
           >
-            Search
-          </button>
-
-          <button
-            onClick={() => setSearchQuery('')}
-            style={{
-              backgroundColor: '#cbd5e1',
-              color: '#334155',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '9px 20px',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            Clear
-          </button>
+            <CheckCircle2 size={14} />
+            <span>4 Packages Ingested from Desktop</span>
+          </span>
         </div>
       </div>
 
-      {/* Table Section matching frame 170s */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '10px',
-        border: '1px solid #e2e8f0',
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-      }}>
-        {/* Search and Excel bar */}
-        <div style={{
-          padding: '14px 20px',
+      {/* 3. SECTION 1: RECEIVED PACKAGES DETAILS */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '22px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid #f1f5f9'
-        }}>
-          <div style={{ position: 'relative', width: '280px' }}>
-            <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px 8px 36px',
-                borderRadius: '20px',
-                border: '1px solid #cbd5e1',
-                fontSize: '13px'
-              }}
-            />
+          flexDirection: 'column',
+          gap: '16px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b' }}>
+              1. Received Geospatial Packages for PPCRC Building
+            </div>
+            <div style={{ fontSize: '12px', color: '#64748b' }}>
+              Transmitted from NAKSHA 3D Desktop Suite with SHA-256 integrity seal
+            </div>
           </div>
 
-          <button
-            title="Export to Excel"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '7px 14px',
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            <FileSpreadsheet size={15} />
-            <span>Export Excel</span>
-          </button>
+          <div style={{ fontSize: '12px', color: '#0284c7', fontWeight: 700 }}>
+            Property: PPCRC Building (Plot B-7 / Survey No. 88, Hinjawadi Phase 1)
+          </div>
         </div>
 
-        {/* Data Table */}
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px' }}>
             <thead>
-              <tr style={{ backgroundColor: '#2563eb', color: '#ffffff', textAlign: 'left' }}>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>S.No</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>District</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>ULB</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Committee</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600, textAlign: 'center' }}>Document</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Created By</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Created On</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600, textAlign: 'center' }}>Action</th>
+              <tr style={{ backgroundColor: '#f8fafc', color: '#475569', borderBottom: '1.5px solid #e2e8f0', textAlign: 'left' }}>
+                <th style={{ padding: '10px 14px', fontWeight: 700 }}>Package Name</th>
+                <th style={{ padding: '10px 14px', fontWeight: 700 }}>Format</th>
+                <th style={{ padding: '10px 14px', fontWeight: 700 }}>File Identifier</th>
+                <th style={{ padding: '10px 14px', fontWeight: 700 }}>Size</th>
+                <th style={{ padding: '10px 14px', fontWeight: 700 }}>Coordinate Reference (CRS)</th>
+                <th style={{ padding: '10px 14px', fontWeight: 700, textAlign: 'center' }}>Status</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((item, idx) => (
-                <tr
-                  key={item.id}
-                  style={{
-                    borderBottom: '1px solid #f1f5f9',
-                    backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc'
-                  }}
-                >
-                  <td style={{ padding: '12px 14px', color: '#475569' }}>{item.sNo}</td>
-                  <td style={{ padding: '12px 14px', fontWeight: 600, color: '#0f172a' }}>{item.district}</td>
-                  <td style={{ padding: '12px 14px', color: '#334155' }}>{item.ulb}</td>
-                  <td style={{ padding: '12px 14px', fontWeight: 700, color: '#1b539c' }}>{item.committeeName}</td>
+              {pipelineState.desktopPackages.map((pkg, i) => (
+                <tr key={pkg.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '12px 14px', fontWeight: 700, color: '#0f172a' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ color: '#0284c7', fontWeight: 800 }}>0{i + 1}.</span>
+                      <span>{pkg.name}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px 14px', color: '#0369a1', fontWeight: 600 }}>
+                    <code>{pkg.extension}</code>
+                  </td>
+                  <td style={{ padding: '12px 14px', color: '#475569', fontFamily: 'monospace', fontSize: '12px' }}>
+                    {pkg.fileName}
+                  </td>
+                  <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1e293b' }}>
+                    {pkg.fileSize}
+                  </td>
+                  <td style={{ padding: '12px 14px', color: '#64748b' }}>
+                    {pkg.crs}
+                  </td>
                   <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <button
-                      title="Download Gazette Order"
-                      onClick={() => alert(`Downloading formation document: ${item.documentName}`)}
+                    <span
                       style={{
-                        background: '#eff6ff',
-                        border: '1px solid #bfdbfe',
-                        borderRadius: '4px',
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        color: '#2563eb'
+                        backgroundColor: '#dcfce7',
+                        color: '#15803d',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
                       }}
                     >
-                      <Download size={14} />
-                    </button>
-                  </td>
-                  <td style={{ padding: '12px 14px', color: '#475569' }}>{item.createdBy}</td>
-                  <td style={{ padding: '12px 14px', color: '#64748b', fontSize: '12px' }}>{item.createdOn}</td>
-                  <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                      <button
-                        title="Edit Committee"
-                        onClick={() => openEditModal(item)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: '#2563eb'
-                        }}
-                      >
-                        <Edit3 size={16} />
-                      </button>
-                      <button
-                        title="View Details"
-                        onClick={() => setViewRecord(item)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: '#0284c7'
-                        }}
-                      >
-                        <Eye size={16} />
-                      </button>
-                    </div>
+                      <CheckCircle2 size={12} />
+                      <span>Verified & Ingested</span>
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {/* Table Pagination Footer */}
-        <div style={{
-          padding: '12px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: '16px',
-          fontSize: '12px',
-          color: '#64748b',
-          borderTop: '1px solid #f1f5f9'
-        }}>
-          <span>Items per page: 10</span>
-          <span>1 - {filtered.length} of {filtered.length}</span>
-        </div>
       </div>
 
-      {/* CREATE / UPDATE COMMITTEE MODAL matching video Frames 125s, 140s, 180s */}
-      {modalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.55)',
+      {/* 4. SECTION 2: ASSIGN SURVEY TEAM IN SELECTING WAY */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '22px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '20px'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '850px',
-            maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-          }}>
-            {/* Modal Header */}
-            <div style={{
-              backgroundColor: '#1b539c',
-              color: '#ffffff',
-              padding: '14px 24px',
+          flexDirection: 'column',
+          gap: '18px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ fontSize: '15.5px', fontWeight: 800, color: '#1e293b' }}>
+              2. Field Survey Team Assignment (Selecting Mode)
+            </div>
+            <div style={{ fontSize: '12px', color: '#64748b' }}>
+              Select licensed officers for ground-truthing or click Autofill to populate the official cadre.
+            </div>
+          </div>
+
+          {!showAssignSelector ? (
+            <button
+              onClick={handleOpenAssignTeam}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 22px',
+                backgroundColor: '#1b539c',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '13.5px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(27, 83, 156, 0.25)'
+              }}
+            >
+              <Users size={16} />
+              <span>Assign Survey Team</span>
+            </button>
+          ) : (
+            <button
+              onClick={handleAutofillMembers}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                backgroundColor: '#f0fdf4',
+                color: '#15803d',
+                border: '1.5px solid #86efac',
+                borderRadius: '6px',
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              <Sparkles size={14} />
+              <span>Autofill Official Members</span>
+            </button>
+          )}
+        </div>
+
+        {/* IF NOT OPEN YET */}
+        {!showAssignSelector && (
+          <div
+            style={{
+              padding: '32px 20px',
+              backgroundColor: '#f8fafc',
+              border: '1.5px dashed #cbd5e1',
+              borderRadius: '8px',
+              textAlign: 'center',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <span style={{ fontSize: '16px', fontWeight: 800 }}>
-                {isEditing ? 'Update Committee' : 'Create Committee'}
-              </span>
-              <button
-                onClick={() => setModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
-              >
-                <X size={20} />
-              </button>
+              gap: '10px'
+            }}
+          >
+            <Users size={32} color="#94a3b8" />
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#334155' }}>
+              No Survey Team Assigned to PPCRC Building Yet
+            </div>
+            <div style={{ fontSize: '12px', color: '#64748b', maxWidth: '460px' }}>
+              Click the <strong>"Assign Survey Team"</strong> button to open the member selection dropdowns and assign the Chief Survey Officer.
+            </div>
+            <button
+              onClick={handleOpenAssignTeam}
+              style={{
+                marginTop: '6px',
+                padding: '8px 18px',
+                backgroundColor: '#1b539c',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              + Assign Survey Team
+            </button>
+          </div>
+        )}
+
+        {/* SELECTING WAY: 5 INTERACTIVE SELECTION BOXES */}
+        {showAssignSelector && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* 5 Selection Boxes Grid */}
+            <div
+              style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '18px 20px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '16px'
+              }}
+            >
+              {/* 1. Main Officer Selection */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>1. Main Officer / Lead Surveyor</span>
+                  <span style={{ color: '#dc2626' }}>*</span>
+                </label>
+                <select
+                  value={selectedMainOfficer}
+                  onChange={(e) => setSelectedMainOfficer(e.target.value)}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #16a34a',
+                    backgroundColor: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {AVAILABLE_MAIN_OFFICERS.map(officer => (
+                    <option key={officer.name} value={officer.name}>
+                      {officer.name} ({officer.licenseOrReg})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>
+                  Chief Signatory for Plot Certification
+                </span>
+              </div>
+
+              {/* 2. Drone Pilot Selection */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>
+                  2. Drone Pilot / Photogrammetry
+                </label>
+                <select
+                  value={selectedDronePilot}
+                  onChange={(e) => setSelectedDronePilot(e.target.value)}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {AVAILABLE_DRONE_PILOTS.map(pilot => (
+                    <option key={pilot.name} value={pilot.name}>
+                      {pilot.name} ({pilot.licenseOrReg})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  DGCA Licensed Drone Operator
+                </span>
+              </div>
+
+              {/* 3. GNSS / RTK Surveyor Selection */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>
+                  3. Cadastral Surveyor (GNSS / RTK)
+                </label>
+                <select
+                  value={selectedGnssSurveyor}
+                  onChange={(e) => setSelectedGnssSurveyor(e.target.value)}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {AVAILABLE_GNSS_SURVEYORS.map(gnss => (
+                    <option key={gnss.name} value={gnss.name}>
+                      {gnss.name} ({gnss.licenseOrReg})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  Ground Control & Vertex Verification
+                </span>
+              </div>
+
+              {/* 4. 3D GIS Analyst Selection */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>
+                  4. 3D GIS & LiDAR Analyst
+                </label>
+                <select
+                  value={selectedGisAnalyst}
+                  onChange={(e) => setSelectedGisAnalyst(e.target.value)}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {AVAILABLE_GIS_ANALYSTS.map(gis => (
+                    <option key={gis.name} value={gis.name}>
+                      {gis.name} ({gis.licenseOrReg})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  BIM / Point Cloud Segmentation
+                </span>
+              </div>
+
+              {/* 5. ULB Representative Selection */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>
+                  5. ULB / PMRDA Representative
+                </label>
+                <select
+                  value={selectedUlbRep}
+                  onChange={(e) => setSelectedUlbRep(e.target.value)}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {AVAILABLE_ULB_REPRESENTATIVES.map(rep => (
+                    <option key={rep.name} value={rep.name}>
+                      {rep.name} ({rep.licenseOrReg})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  Town Planning Endorsement
+                </span>
+              </div>
             </div>
 
-            {/* Modal Body */}
-            <form onSubmit={handleSubmit} style={{ overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* District & ULB row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>
-                    District
-                  </label>
-                  <input
-                    type="text"
-                    readOnly
-                    value="Pune"
-                    style={{ width: '100%', padding: '9px 12px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>
-                    Search By ULB
-                  </label>
-                  <input
-                    type="text"
-                    readOnly
-                    value="PMRDA Pune - 270410"
-                    style={{ width: '100%', padding: '9px 12px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                  />
-                </div>
+            {/* Selected Team Members Cards Preview */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: '#334155' }}>
+                Assigned Team Roster (Reflecting Active Selections):
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-                  Committee Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Hinjawadi Phase 1 Survey Committee"
-                  value={formCommitteeName}
-                  onChange={(e) => setFormCommitteeName(e.target.value)}
-                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                />
-              </div>
-
-              {/* Expand / Collapse buttons matching video */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button
-                  type="button"
-                  onClick={expandAll}
-                  style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Expand All
-                </button>
-                <button
-                  type="button"
-                  onClick={collapseAll}
-                  style={{ backgroundColor: '#0284c7', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Collapse All
-                </button>
-              </div>
-
-              {/* 1. Head of Committee Accordion */}
-              <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                <div
-                  onClick={() => toggleAccordion('head')}
-                  style={{
-                    backgroundColor: '#e0e7ff',
-                    padding: '12px 18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    color: '#1e1b4b'
-                  }}
-                >
-                  <span>Head of Committee</span>
-                  {accordionState.head ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-                {accordionState.head && (
-                  <div style={{ padding: '16px', backgroundColor: '#ffffff' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                      Select User *
-                    </label>
-                    <select
-                      value={headOfCommittee}
-                      onChange={(e) => setHeadOfCommittee(e.target.value)}
-                      style={{ width: '100%', padding: '9px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                    >
-                      <option value="Rajesh Deshmukh (Addl. Collector, Pune)">Rajesh Deshmukh (Addl. Collector, Pune)</option>
-                      <option value="Anil Kadam (Deputy Collector, Land Records)">Anil Kadam (Deputy Collector, Land Records)</option>
-                      <option value="Vikas Gaikwad (Superintendent Land Records)">Vikas Gaikwad (Superintendent Land Records)</option>
-                      <option value="Dr. Suresh Mane (Joint Director Town Planning)">Dr. Suresh Mane (Joint Director Town Planning)</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {/* 2. Committee Assistant Accordion */}
-              <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                <div
-                  onClick={() => toggleAccordion('assistant')}
-                  style={{
-                    backgroundColor: '#e0e7ff',
-                    padding: '12px 18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    color: '#1e1b4b'
-                  }}
-                >
-                  <span>Committee Assistant</span>
-                  {accordionState.assistant ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-                {accordionState.assistant && (
-                  <div style={{ padding: '16px', backgroundColor: '#ffffff' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                      Select User *
-                    </label>
-                    <select
-                      value={assistant}
-                      onChange={(e) => setAssistant(e.target.value)}
-                      style={{ width: '100%', padding: '9px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
-                    >
-                      <option value="Snehal Patil (Town Planning Officer)">Snehal Patil (Town Planning Officer)</option>
-                      <option value="Pravin Shinde (Assistant Director Town Planning)">Pravin Shinde (Assistant Director Town Planning)</option>
-                      <option value="Meera Rao (Junior Planner)">Meera Rao (Junior Planner)</option>
-                      <option value="Kiran Thite (Survey Inspector)">Kiran Thite (Survey Inspector)</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {/* 3. Surveyor Accordion (Dynamic) */}
-              <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                <div
-                  onClick={() => toggleAccordion('surveyor')}
-                  style={{
-                    backgroundColor: '#e0e7ff',
-                    padding: '12px 18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    color: '#1e1b4b'
-                  }}
-                >
-                  <span>Surveyor ({surveyors.length})</span>
-                  {accordionState.surveyor ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-                {accordionState.surveyor && (
-                  <div style={{ padding: '16px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {surveyors.map((srv, idx) => (
-                      <div key={idx} style={{ padding: '14px', border: '1px solid #f1f5f9', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#1b539c', marginBottom: '10px' }}>
-                          Surveyor #{idx + 1}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
+                {currentConstructedTeam.map((member) => (
+                  <div
+                    key={member.id}
+                    style={{
+                      backgroundColor: member.isMainOfficer ? '#f0fdf4' : '#ffffff',
+                      border: member.isMainOfficer ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '14px 16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '6px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <div>
+                        <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
+                          {member.name}
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                          <div>
-                            <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Name *</label>
-                            <input
-                              type="text"
-                              required
-                              placeholder="Enter surveyor name"
-                              value={srv.name}
-                              onChange={(e) => handleSurveyorChange(idx, 'name', e.target.value)}
-                              style={{ width: '100%', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Mobile *</label>
-                            <input
-                              type="text"
-                              required
-                              placeholder="10 digit mobile number"
-                              value={srv.mobile}
-                              onChange={(e) => handleSurveyorChange(idx, 'mobile', e.target.value)}
-                              style={{ width: '100%', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Email</label>
-                            <input
-                              type="email"
-                              placeholder="Enter email address"
-                              value={srv.email}
-                              onChange={(e) => handleSurveyorChange(idx, 'email', e.target.value)}
-                              style={{ width: '100%', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Department</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. PMRDA GIS / Land Records"
-                              value={srv.department}
-                              onChange={(e) => handleSurveyorChange(idx, 'department', e.target.value)}
-                              style={{ width: '100%', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                            />
-                          </div>
-                          <div style={{ gridColumn: 'span 2' }}>
-                            <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Designation</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. Cadastral Field Surveyor"
-                              value={srv.designation}
-                              onChange={(e) => handleSurveyorChange(idx, 'designation', e.target.value)}
-                              style={{ width: '100%', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                            />
-                          </div>
+                        <div style={{ fontSize: '11px', color: '#64748b' }}>
+                          Reg: {member.licenseOrReg}
                         </div>
                       </div>
-                    ))}
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <button
-                        type="button"
-                        onClick={handleAddSurveyor}
-                        style={{
-                          backgroundColor: '#7c3aed',
-                          color: '#ffffff',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '36px',
-                          height: '36px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 6px rgba(124,58,237,0.3)'
-                        }}
-                        title="Add Another Surveyor"
-                      >
-                        <Plus size={20} />
-                      </button>
+                      {member.isMainOfficer && (
+                        <span
+                          style={{
+                            backgroundColor: '#16a34a',
+                            color: '#ffffff',
+                            fontSize: '9.5px',
+                            fontWeight: 800,
+                            padding: '2px 8px',
+                            borderRadius: '10px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.4px'
+                          }}
+                        >
+                          Main Officer
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ fontSize: '11.5px', color: '#1e40af', fontWeight: 600 }}>
+                      {member.role}
+                    </div>
+
+                    <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Phone size={11} />
+                      <span>{member.contact}</span>
                     </div>
                   </div>
-                )}
+                ))}
+              </div>
+            </div>
+
+            {/* Submit & Dispatch Action Row */}
+            <div
+              style={{
+                borderTop: '1px solid #e2e8f0',
+                paddingTop: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}
+            >
+              <div style={{ fontSize: '12.5px', color: '#475569' }}>
+                Selected Main Officer: <strong>{mainOff.name}</strong> • Ready to be dispatched to Field Surveyor Portal.
               </div>
 
-              {/* Document Upload */}
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
-                  Choose Document *
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => setDocumentFile(e.target.files?.[0]?.name || 'PMRDA_COMMITTEE_ORDER.pdf')}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '6px',
-                    width: '100%',
-                    backgroundColor: '#f8fafc'
-                  }}
-                />
-              </div>
-
-              {/* Modal Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#1b539c',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '10px 24px',
-                    fontWeight: 700,
-                    fontSize: '13.5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {isEditing ? 'Update' : 'Submit'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  style={{
-                    backgroundColor: '#cbd5e1',
-                    color: '#334155',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '10px 20px',
-                    fontWeight: 600,
-                    fontSize: '13.5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW RECORD MODAL */}
-      {viewRecord && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 110,
-          padding: '20px'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '650px',
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-          }}>
-            <div style={{ backgroundColor: '#1b539c', color: '#ffffff', padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: 800, fontSize: '15px' }}>Committee Details</span>
-              <button onClick={() => setViewRecord(null)} style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}>
-                <X size={18} />
+              <button
+                onClick={handleSubmitToSurveyor}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '11px 22px',
+                  backgroundColor: '#16a34a',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '13.5px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(22, 163, 74, 0.25)'
+                }}
+              >
+                <Send size={15} />
+                <span>Submit & Dispatch to Surveyor Portal (/surveyor) →</span>
               </button>
             </div>
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
-              <div>
-                <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px', fontWeight: 600 }}>Committee Name</span>
-                <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '15px' }}>{viewRecord.committeeName}</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+
+            {/* Confirmation Banner */}
+            {submittedToSurveyor && (
+              <div
+                style={{
+                  backgroundColor: '#ecfdf5',
+                  border: '1.5px solid #34d399',
+                  borderRadius: '8px',
+                  padding: '16px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  animation: 'fadeIn 0.2s ease'
+                }}
+              >
+                <CheckCircle2 size={22} color="#059669" style={{ flexShrink: 0 }} />
                 <div>
-                  <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px' }}>District</span>
-                  <span style={{ fontWeight: 600 }}>{viewRecord.district}</span>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px' }}>ULB</span>
-                  <span style={{ fontWeight: 600 }}>{viewRecord.ulb}</span>
-                </div>
-              </div>
-              <div>
-                <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px' }}>Head of Committee</span>
-                <span style={{ fontWeight: 600, color: '#1b539c' }}>{viewRecord.headOfCommittee}</span>
-              </div>
-              <div>
-                <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px' }}>Committee Assistant</span>
-                <span style={{ fontWeight: 600 }}>{viewRecord.assistant}</span>
-              </div>
-              <div>
-                <span style={{ color: '#64748b', display: 'block', fontSize: '11.5px', marginBottom: '6px' }}>Assigned Surveyors ({viewRecord.surveyors.length})</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {viewRecord.surveyors.map((s, idx) => (
-                    <div key={idx} style={{ backgroundColor: '#f8fafc', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{s.name} - {s.designation}</div>
-                      <div style={{ fontSize: '11.5px', color: '#64748b' }}>{s.department} | Mobile: {s.mobile}</div>
-                    </div>
-                  ))}
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#065f46' }}>
+                    Successfully Dispatched to Surveyor Portal!
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: '#047857', marginTop: '2px' }}>
+                    The assigned cadre with Main Officer <strong>{mainOff.name}</strong> is now active in the Survey Activities section for field ground-truthing.
+                  </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '10px' }}>
-                <button
-                  onClick={() => setViewRecord(null)}
-                  style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '6px', padding: '8px 20px', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

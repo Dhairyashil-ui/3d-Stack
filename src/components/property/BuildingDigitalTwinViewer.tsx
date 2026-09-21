@@ -35,6 +35,14 @@ export interface RoomDoorGeometry {
 }
 
 export function getRoomDoorGeometry(roomCode: string): RoomDoorGeometry {
+  if (roomCode.includes('101')) {
+    return {
+      roomCode: 'A-101',
+      floor: 1,
+      doorMidPos: new THREE.Vector3(11.47, 1.23, -7.40),
+      normal: new THREE.Vector3(-1, 0, 0)
+    };
+  }
   const digits = roomCode.replace(/[^0-9]/g, '');
   const f = Math.min(Math.max(parseInt(digits[0] || '1', 10), 1), 5);
   const r = parseInt(digits.slice(1) || '19', 10);
@@ -490,7 +498,7 @@ function createTileWaveRing(): THREE.Mesh {
 }
 
 export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps> = ({
-  targetRoomNumber = 'A-119',
+  targetRoomNumber = 'A-101',
   isActive,
   onConstructionComplete,
   onArrivedAtRoom,
