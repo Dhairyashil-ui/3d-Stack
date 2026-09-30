@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { DesktopDownloadModal } from '../components/desktop/DesktopDownloadModal';
 import {
   ChevronDown,
   ChevronLeft,
@@ -180,10 +179,9 @@ export const PublicPortalPage: React.FC = () => {
   // State Specific Section - Maharashtra selected by default
   const [selectedState, setSelectedState] = useState<string>('Maharashtra');
 
-  // Modals (Lightbox / Video / Desktop Download)
+  // Modals (Lightbox / Video)
   const [selectedPhoto, setSelectedPhoto] = useState<{ src: string; title: string } | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
-  const [desktopModalOpen, setDesktopModalOpen] = useState(false);
 
   // Back to Top Button
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -544,33 +542,6 @@ export const PublicPortalPage: React.FC = () => {
             )}
           </div>
 
-          {/* Desktop App Download Button */}
-          <button
-            onClick={() => setDesktopModalOpen(true)}
-            id="top-desktop-download-btn"
-            title="Download NAKSHA 2.0 3D Desktop Workstation Application"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#005cbb',
-              color: '#ffffff',
-              border: 'none',
-              fontWeight: 600,
-              fontSize: '12.5px',
-              padding: '5px 12px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0,92,187,0.25)'
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#00448a')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#005cbb')}
-          >
-            <Monitor size={14} />
-            <span>🖥️ Desktop 3D App</span>
-          </button>
-
           {/* Login Link with user icon */}
           <Link
             to="/login"
@@ -600,9 +571,6 @@ export const PublicPortalPage: React.FC = () => {
       {/* ========================================================================= */}
       {/* 2. BRAND HEADER SECTION (Ashoka Lion Capital, Ministry Info, NAKSHA Logo)  */}
       {/* ========================================================================= */}
-      {/* ========================================================================= */}
-      {/* 2. BRAND HEADER SECTION (NAKSHA 2.0 Identity & Desktop App Download CTA) */}
-      {/* ========================================================================= */}
       <header
         style={{
           backgroundColor: '#ffffff',
@@ -610,93 +578,79 @@ export const PublicPortalPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid #eef2f6',
-          flexWrap: 'wrap',
-          gap: '16px'
+          borderBottom: '1px solid #eef2f6'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-            <img
-              src="/assets/naksha_2_logo.png"
-              alt="NAKSHA 2.0 Logo"
-              style={{ height: '68px', width: 'auto', objectFit: 'contain' }}
-              onError={(e) => {
-                e.currentTarget.src = '/assets/app-logo.png';
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+          {/* Ashoka Stambh / National Emblem */}
+          <img
+            src="/assets/bharat-sarkar.svg"
+            alt="Government of India Emblem"
+            style={{ height: '84px', width: 'auto', objectFit: 'contain' }}
+            onError={(e) => {
+              e.currentTarget.src = '/assets/top logo of ministery.png';
+            }}
+          />
+
+          {/* Official Ministry Stack Typography */}
+          <div>
+            <div
+              style={{
+                fontSize: '15.5px',
+                fontWeight: 700,
+                color: '#13294b',
+                lineHeight: '1.25',
+                letterSpacing: '-0.2px'
               }}
-            />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '24px', fontWeight: 900, color: '#0f2b5c', letterSpacing: '-0.5px' }}>
-                  NAKSHA <span style={{ color: '#0284c7' }}>2.0</span>
-                </span>
-                <span
-                  style={{
-                    backgroundColor: '#fef3c7',
-                    color: '#92400e',
-                    border: '1px solid #fde68a',
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    letterSpacing: '0.4px'
-                  }}
-                >
-                  SIH 2026 PROTOTYPE
-                </span>
-              </div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#0284c7', marginTop: '2px', letterSpacing: '0.2px' }}>
-                Next-Generation 3D Cadastral & Urban Habitation Digital Twin
-              </div>
-              <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '1px' }}>
-                Volumetric Multi-Floor Stratification • Automated Drone Mesh • Sub-Centimeter RTK GNSS
-              </div>
+            >
+
             </div>
-          </Link>
+            <div
+              style={{
+                fontSize: '12.5px',
+                fontWeight: 800,
+                color: '#002b5c',
+                letterSpacing: '0.4px',
+                marginTop: '3px'
+              }}
+            >
+
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: 500,
+                color: '#64748b',
+                letterSpacing: '0.2px'
+              }}
+            >
+
+            </div>
+          </div>
         </div>
 
-        {/* Desktop App Download CTA */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={() => setDesktopModalOpen(true)}
-            id="brand-header-desktop-download"
-            title="Download Standalone Desktop Application"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'linear-gradient(135deg, #005cbb 0%, #0284c7 100%)',
-              color: '#ffffff',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(0,92,187,0.3)',
-              textAlign: 'left',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,92,187,0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,92,187,0.3)';
-            }}
-          >
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Monitor size={22} color="#ffffff" />
-            </div>
-            <div>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#bae6fd', fontWeight: 800 }}>
-                Offline Workstation v2.0
-              </div>
-              <div style={{ fontSize: '14px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>Download Desktop App</span>
-                <Download size={15} />
-              </div>
-            </div>
-          </button>
+        {/* NAKSHA Official Logo Badge */}
+        <div
+          style={{
+            border: '1px solid #c9d7e8',
+            borderRadius: '6px',
+            padding: '4px 10px',
+            backgroundColor: '#ffffff',
+            display: 'inline-flex',
+            alignItems: 'center',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+          }}
+        >
+          <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src="/assets/naksha_logo.png"
+              alt="NAKSHA Logo - National Geospatial Knowledge-based Land Survey of Urban Habitations"
+              style={{ height: '70px', width: 'auto', objectFit: 'contain' }}
+              onError={(e) => {
+                e.currentTarget.src = '/assets/top logo of ministery.png';
+              }}
+            />
+          </Link>
         </div>
       </header>
 
@@ -1097,31 +1051,20 @@ export const PublicPortalPage: React.FC = () => {
                 >
                   Android App
                 </a>
-                <button
-                  onClick={() => {
-                    setDesktopModalOpen(true);
-                    setActiveNavDropdown(null);
-                  }}
+                <a
+                  href="#downloads-section"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
+                    display: 'block',
                     padding: '8px 16px',
-                    color: '#005cbb',
-                    fontWeight: 600,
+                    color: '#1e293b',
                     fontSize: '13px',
-                    textAlign: 'left',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer'
+                    textDecoration: 'none'
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f1f5f9')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <span>Windows 3D App (.exe)</span>
-                  <Download size={13} />
-                </button>
+                  Windows App
+                </a>
               </div>
             )}
           </div>
@@ -1354,7 +1297,7 @@ export const PublicPortalPage: React.FC = () => {
                   animation: 'marquee 19s linear infinite'
                 }}
               >
-                🚀 Welcome to NAKSHA 2.0 (Smart India Hackathon 2026 Prototype) — Next-Gen 3D Cadastral Digital Twin & Volumetric Land Governance! 📥 Download the Standalone 3D Desktop Application for offline GPU-accelerated volumetric survey processing, floor-wise property cards & sub-centimeter RTK integration!
+                Exciting Update! The NAKSHA Ticketing Module is now LIVE Raise & track all issues, concerns, and customization/change requests easily via Support → Create Ticket / My Tickets. Stay tuned! MPSeDC will soon conduct an exclusive training session to help State Teams make the most of the new Ticketing Module!
               </div>
             </div>
           </div>
@@ -1381,7 +1324,7 @@ export const PublicPortalPage: React.FC = () => {
                 gap: '14px'
               }}
             >
-              {/* Card 1: NAKSHA 2.0 Pilot ULBs */}
+              {/* Card 1: NAKSHA Pilot ULBs */}
               <div
                 style={{
                   background: 'linear-gradient(135deg, #1d74d4 0%, #3b9af4 100%)',
@@ -1395,7 +1338,7 @@ export const PublicPortalPage: React.FC = () => {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '11.5px', fontWeight: 600 }}>NAKSHA 2.0 Pilot ULBs</div>
+                  <div style={{ fontSize: '11.5px', fontWeight: 600 }}>NAKSHA Pilot ULBs</div>
                   <div style={{ fontSize: '11px', opacity: 0.9 }}>(ULB/State)</div>
                   <div style={{ fontSize: '22px', fontWeight: 800, marginTop: '14px', letterSpacing: '-0.5px' }}>
                     150/29
@@ -1772,7 +1715,7 @@ export const PublicPortalPage: React.FC = () => {
                 marginBottom: '16px'
               }}
             >
-              NAKSHA 2.0 at a Glance - State Specific
+              NAKSHA at a Glance - State Specific
             </h2>
 
             {/* State Selector Dropdown */}
@@ -1809,7 +1752,7 @@ export const PublicPortalPage: React.FC = () => {
                 gap: '12px'
               }}
             >
-              {/* 1. NAKSHA 2.0 Pilot ULBs */}
+              {/* 1. NAKSHA Pilot ULBs */}
               <div
                 style={{
                   backgroundColor: '#ffffff',
@@ -1823,7 +1766,7 @@ export const PublicPortalPage: React.FC = () => {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#0f3b6c' }}>NAKSHA 2.0 Pilot</div>
+                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#0f3b6c' }}>NAKSHA Pilot</div>
                   <div style={{ fontSize: '10.5px', color: '#64748b' }}>ULBs</div>
                   <div style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginTop: '6px' }}>
                     {currentStateMetrics.pilotUlbs}
@@ -2083,7 +2026,7 @@ export const PublicPortalPage: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 8. WHAT IS NAKSHA 2.0 & OUR MISSION SECTION (3D Parcel + Desktop App CTA)  */}
+      {/* 8. WHAT IS NAKSHA PROGRAMME? SECTION (3D Parcel + 4 Circles)              */}
       {/* ========================================================================= */}
       <div
         id="about-section"
@@ -2108,7 +2051,7 @@ export const PublicPortalPage: React.FC = () => {
             <div style={{ textAlign: 'center' }}>
               <img
                 src="/assets/extracted/3d_parcel.png"
-                alt="NAKSHA 2.0 3D Cadastral Land Survey Parcel"
+                alt="NAKSHA 3D Cadastral Land Survey Parcel"
                 style={{
                   maxWidth: '100%',
                   height: 'auto',
@@ -2121,81 +2064,31 @@ export const PublicPortalPage: React.FC = () => {
               />
             </div>
 
-            {/* Right Text: What is NAKSHA 2.0 & Our Mission? */}
+            {/* Right Text: What is NAKSHA Programme? */}
             <div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f3b6c', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Smart India Hackathon 2026 Innovation
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f3b6c', marginBottom: '4px' }}>
+                What is
               </div>
               <h2
                 style={{
-                  fontSize: '28px',
+                  fontSize: '26px',
                   fontWeight: 800,
                   color: '#005cbb',
-                  marginBottom: '14px'
+                  marginBottom: '16px'
                 }}
               >
-                What is NAKSHA 2.0 & Our Mission?
+                NAKSHA Programme?
               </h2>
               <p
                 style={{
-                  fontSize: '14px',
-                  lineHeight: '1.75',
+                  fontSize: '13.5px',
+                  lineHeight: '1.7',
                   color: '#334155',
-                  textAlign: 'justify',
-                  margin: '0 0 20px 0'
+                  textAlign: 'justify'
                 }}
               >
-                <strong>NAKSHA 2.0</strong> is an advanced 3D Cadastral Intelligence and Urban Digital Twin prototype engineered for the <strong>Smart India Hackathon (SIH 2026)</strong>. While legacy cadastral surveys map only two-dimensional surface parcels, NAKSHA 2.0 introduces volumetric 3D modeling tailored for high-density multi-storey urban habitations. Our mission is to empower citizens and government administrations with sub-centimeter RTK GNSS geospatial accuracy, automated 3D mesh reconstruction from drone photogrammetry and LiDAR point clouds, floor-wise vertical ULPIN demarcation, and instant Urban Property Card (UPC) verification.
+                NAKSHA (National geospatial Knowledge-based land Survey of Urban HAPtations) is a national initiative launched by the Department of Land Resources under the Digital India Land Records Modernisation Programme (DILRMP) in September 2024 to address critical gaps in urban and peri-urban land records. It aims to revolutionize and modernize urban land records by creating comprehensive, accurate, and up-to-date GIS-integrated digital maps of land parcels, using advanced technologies such as aerial imagery, drones, GNSS-based field surveys, and Web-GIS platforms. The programme seeks to replace outdated, fragmented, or manual land record systems with transparent, reliable data that can empower citizens with clear property ownership information, reduce land disputes, streamline property transactions, improve property tax collection, and strengthen urban planning and governance.
               </p>
-
-              {/* Download Desktop App CTA Banner */}
-              <div
-                style={{
-                  backgroundColor: '#eff6ff',
-                  border: '1.5px solid #bfdbfe',
-                  borderRadius: '12px',
-                  padding: '16px 20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '14px'
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#1e40af' }}>
-                    🖥️ Experience Full 3D Modeling on Desktop Workstation
-                  </div>
-                  <div style={{ fontSize: '12.5px', color: '#475569', marginTop: '2px' }}>
-                    Download the standalone Windows app for offline GPU-accelerated volumetric rendering and RTK field survey tools.
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setDesktopModalOpen(true)}
-                  id="about-desktop-download-btn"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: '#2563eb',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '10px 18px',
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 10px rgba(37, 99, 235, 0.25)',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
-                >
-                  <Download size={15} />
-                  <span>Download Desktop App</span>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -2224,12 +2117,12 @@ export const PublicPortalPage: React.FC = () => {
               >
                 <img
                   src="/assets/extracted/obj_circle_1.png"
-                  alt="Automated 3D Cadastral Twin"
+                  alt="Digitally map land parcels"
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
               </div>
               <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f3b6c', padding: '0 10px' }}>
-                Automated 3D Cadastral Digital Twin
+                Digitally map land parcels
               </div>
             </div>
 
@@ -2249,12 +2142,12 @@ export const PublicPortalPage: React.FC = () => {
               >
                 <img
                   src="/assets/extracted/obj_circle_2.png"
-                  alt="Multi-Floor Vertical ULPIN Demarcation"
+                  alt="Establish clear ownership and land use"
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
               </div>
               <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f3b6c', padding: '0 10px' }}>
-                Multi-Floor Vertical ULPIN Demarcation
+                Establish clear ownership and land use
               </div>
             </div>
 
@@ -2274,12 +2167,12 @@ export const PublicPortalPage: React.FC = () => {
               >
                 <img
                   src="/assets/extracted/obj_circle_3.png"
-                  alt="Sub-Centimeter RTK GNSS Accuracy"
+                  alt="Enhance transparency in property management"
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
               </div>
               <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f3b6c', padding: '0 10px' }}>
-                Sub-Centimeter RTK GNSS Field Accuracy
+                Enhance transparency in property management
               </div>
             </div>
 
@@ -2299,12 +2192,12 @@ export const PublicPortalPage: React.FC = () => {
               >
                 <img
                   src="/assets/extracted/obj_circle_4.png"
-                  alt="Standalone GPU Desktop 3D Workstation"
+                  alt="Enable informed decision-making for urban planning"
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
               </div>
               <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f3b6c', padding: '0 10px' }}>
-                Standalone GPU Desktop 3D Workstation
+                Enable informed decision-making for urban planning and infrastructure
               </div>
             </div>
           </div>
@@ -2324,7 +2217,7 @@ export const PublicPortalPage: React.FC = () => {
               marginBottom: '24px'
             }}
           >
-            NAKSHA 2.0 Ecosystem & Supporting Partners
+            NAKSHA Supporting Partners
           </h2>
 
           <div
@@ -2634,44 +2527,28 @@ export const PublicPortalPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>Latest Announcements</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>Notification</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '12.5px', lineHeight: '1.5', opacity: 0.95 }}>
                 <p style={{ margin: 0 }}>
-                  🚀 <strong>NAKSHA 2.0 Desktop Workstation (v2.0.0):</strong> Standalone 64-bit release available for Windows with offline GPU volumetric 3D cadastre rendering.
+                  Advertisement for engagement of Consultant(PS) (01 Nos.) on short-term contract basis for a period of one year reg.
                 </p>
                 <p style={{ margin: 0 }}>
-                  🏢 <strong>Smart India Hackathon 2026:</strong> Automated multi-floor apartment vertical ULPIN demarcation successfully validated on pilot drone point clouds.
+                  The following transfer/posting is made w.e.f. the forenoon of 01.09.2025 and until further orders
                 </p>
                 <p style={{ margin: 0 }}>
-                  🛰️ <strong>RTK GNSS Integration:</strong> High-precision sub-centimeter field boundary calibration now enabled across all pilot survey units.
+                  The DoLR invites applications for following posts on contractual/deputation basis for the World Bank Assisted Project (REWARD)
                 </p>
               </div>
             </div>
 
             <div style={{ marginTop: '20px' }}>
-              <button
-                onClick={() => setDesktopModalOpen(true)}
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  color: '#ffffff',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                <Download size={13} />
-                <span>Get Desktop Workstation</span>
-              </button>
+              <a href="#events-section" style={{ color: '#93c5fd', fontSize: '12.5px', fontWeight: 600, textDecoration: 'none' }}>
+                See More
+              </a>
             </div>
           </div>
 
-          {/* Card 2: Innovation Highlights */}
+          {/* Card 2: Tender */}
           <div
             style={{
               backgroundColor: '#1b3b6f',
@@ -2687,7 +2564,7 @@ export const PublicPortalPage: React.FC = () => {
               boxShadow: '0 4px 14px rgba(27, 59, 111, 0.25)'
             }}
           >
-            {/* Gavel / Tech Watermark */}
+            {/* Gavel Watermark */}
             <div style={{ position: 'absolute', top: '16px', right: '16px', opacity: 0.18 }}>
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5">
                 <path d="M14 13l-7.5 7.5c-.8.8-2 .8-2.8 0s-.8-2 0-2.8L11.2 10.2" />
@@ -2699,17 +2576,14 @@ export const PublicPortalPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>SIH 2026 Core Tech</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px', opacity: 0.95 }}>
-                <div>• Automated 3D building reconstruction from 2D aerial tiles</div>
-                <div>• Floor-wise 3D apartment bounding boxes & clearance verification</div>
-                <div>• Tamper-proof 3D Urban Property Cards (UPC) with SHA-256 verification</div>
-                <div>• Sub-centimeter RTK rover live correction telemetry via NTRIP</div>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>Tender</h3>
+              <div style={{ fontSize: '13.5px', opacity: 0.9, marginTop: '20px' }}>
+                No post to display
               </div>
             </div>
 
             <div style={{ marginTop: '20px' }}>
-              <span style={{ color: '#93c5fd', fontSize: '12px', fontWeight: 600 }}>NAKSHA 2.0 Innovation Architecture</span>
+              <span style={{ color: '#94a3b8', fontSize: '12.5px' }}>Updated Daily</span>
             </div>
           </div>
 
@@ -2738,7 +2612,7 @@ export const PublicPortalPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>Project Milestones</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 16px 0' }}>Events</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {/* Event 1 */}
                 <div
@@ -2758,7 +2632,7 @@ export const PublicPortalPage: React.FC = () => {
                     style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0 }}
                   />
                   <div style={{ fontSize: '11px', lineHeight: '1.4', opacity: 0.95 }}>
-                    Smart India Hackathon 2026 Showcase: Demonstration of NAKSHA 2.0 3D Cadastral Digital Twin System.
+                    Union Minister for Rural Development and Agriculture & Farmers' Welfare Shri Shivraj Singh Chouhan inaugurated the National Geospatial Knowledge-based Land...
                   </div>
                 </div>
 
@@ -2780,7 +2654,7 @@ export const PublicPortalPage: React.FC = () => {
                     style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0 }}
                   />
                   <div style={{ fontSize: '11px', lineHeight: '1.4', opacity: 0.95 }}>
-                    Technical Workshop: Volumetric 3D Property Cards, BIM integration, and RTK field rover synchronization.
+                    Union Minister for Rural Development Shri Shivraj Singh Chouhan inaugurated the International Workshop on the use of "Modern Technologies in...
                   </div>
                 </div>
               </div>
@@ -3320,12 +3194,6 @@ export const PublicPortalPage: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Standalone Desktop 3D App Download Modal */}
-      <DesktopDownloadModal
-        isOpen={desktopModalOpen}
-        onClose={() => setDesktopModalOpen(false)}
-      />
     </div>
   );
 };

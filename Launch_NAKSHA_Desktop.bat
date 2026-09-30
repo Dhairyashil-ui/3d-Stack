@@ -5,12 +5,12 @@ echo ===================================================================
 echo   NAKSHA 2.0 3D Desktop Workstation - SIH Innovation Prototype
 echo   Starting Standalone Desktop Application Window...
 echo ===================================================================
-if exist "public\downloads\Naksha 2.0.exe" (
-    start "" "public\downloads\Naksha 2.0.exe"
-    exit
-)
 if exist "dist-desktop\Naksha 2.0.exe" (
     start "" "dist-desktop\Naksha 2.0.exe"
+    exit
+)
+if exist "public\downloads\Naksha 2.0.exe" (
+    start "" "public\downloads\Naksha 2.0.exe"
     exit
 )
 if exist "Naksha 2.0.exe" (
