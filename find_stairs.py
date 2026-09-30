@@ -3,6 +3,9 @@ import json, struct
 with open('public/h.glb', 'rb') as f:
     data = f.read()
 
+
+
+
 chunk_len, _ = struct.unpack('<II', data[12:20])
 gltf = json.loads(data[20:20+chunk_len])
 accessors = gltf['accessors']
