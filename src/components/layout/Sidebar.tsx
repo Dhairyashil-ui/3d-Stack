@@ -32,15 +32,17 @@ import {
   Camera,
   Layers2,
   CheckCircle2,
-  Inbox
+  Inbox,
+  X
 } from 'lucide-react';
 import { mockStore } from '../../data/mockStore';
 
 interface SidebarProps {
   collapsed?: boolean;
+  onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const authUser = mockStore.getAuthUser();
@@ -135,16 +137,43 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
       {/* Sidebar Header Title Banner matching State and District structure */}
       {!collapsed && (
         <div style={{
-          padding: '16px 20px 10px 20px',
+          padding: '16px 16px 10px 20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-          marginBottom: '6px'
+          marginBottom: '6px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '8px'
         }}>
-          <div style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.8px', color: '#93c5fd', fontWeight: 700 }}>
-            {isSurveyorMode ? 'FIELD SURVEY & GROUND TRUTHING' : isUlbMode ? 'URBAN LOCAL BODY (PMRDA / PMC)' : isStateMode ? 'STATE ADMINISTRATION' : 'DISTRICT ADMINISTRATION'}
+          <div>
+            <div style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.8px', color: '#93c5fd', fontWeight: 700 }}>
+              {isSurveyorMode ? 'FIELD SURVEY & GROUND TRUTHING' : isUlbMode ? 'URBAN LOCAL BODY (PMRDA / PMC)' : isStateMode ? 'STATE ADMINISTRATION' : 'DISTRICT ADMINISTRATION'}
+            </div>
+            <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
+              {isSurveyorMode ? 'Surveyor Pune (Hinjawadi IT Park)' : isUlbMode ? 'ULB Pune Admin (270410)' : isStateMode ? 'Maharashtra State Portal' : 'Pune District GIS'}
+            </div>
           </div>
-          <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
-            {isSurveyorMode ? 'Surveyor Pune (Hinjawadi IT Park)' : isUlbMode ? 'ULB Pune Admin (270410)' : isStateMode ? 'Maharashtra State Portal' : 'Pune District GIS'}
-          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                border: 'none',
+                borderRadius: '6px',
+                color: '#ffffff',
+                padding: '5px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+              title="Close Menu"
+              aria-label="Close Sidebar"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
       )}
 

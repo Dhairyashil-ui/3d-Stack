@@ -4,7 +4,7 @@
 // 2. Below that: Building & Room Unit ID: Building(4) + Floor(2) + Area(2) + Room(3) -> 0089-01-01-119
 // Clean, professional layout with integrated 3D Digital Twin controls (display mode, floor filter, point cloud, replay)
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Building2,
   MapPin,
@@ -13,6 +13,8 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Scan,
   Sparkles,
   Key,
@@ -42,6 +44,13 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
   const [copied, setCopied] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<string>(propSelectedFloor || 'all');
   const [pointCloudActive, setPointCloudActive] = useState<boolean>(propShowPointCloud || false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch Authoritative Cadastral Record for active room
   const cadastre: RoomCadastreRecord = getRoomCadastre(roomNumber);
@@ -84,6 +93,360 @@ export const PropertyDetailsPanel: React.FC<PropertyDetailsPanelProps> = ({
       (window as any).__twinViewer.handleManualReplay();
     }
   };
+
+  // =========================================================================
+  // MOBILE VIEW: Modern Tactile Bottom Sheet Drawer (Leaves 3D View Unobstructed!)
+  // =========================================================================
+  if (isMobile) {
+    return (
+      <div
+        className="mobile-property-bottom-sheet"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 80,
+          backgroundColor: 'rgba(15, 23, 42, 0.97)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderTop: '2px solid rgba(56, 189, 248, 0.5)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.85)',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: isCollapsed ? '60px' : '62vh',
+          height: isCollapsed ? '60px' : '62vh',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          overflow: 'hidden',
+          color: '#f8fafc',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+        }}
+      >
+        {/* Drag Handle & Quick Summary Bar */}
+        <div 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{
+            padding: '8px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            cursor: 'pointer',
+            backgroundColor: 'rgba(2, 6, 23, 0.85)',
+            borderBottom: isCollapsed ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+            flexShrink: 0
+          }}
+        >
+          {/* iOS-style Tactile Pill Handle */}
+          <div style={{
+            width: '40px',
+            height: '4px',
+            backgroundColor: 'rgba(148, 163, 184, 0.6)',
+            borderRadius: '2px',
+            marginBottom: '6px'
+          }} />
+
+          {/* Quick Header Strip */}
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              <span style={{
+                backgroundColor: '#0284c7',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 800,
+                padding: '2px 8px',
+                borderRadius: '6px',
+                fontFamily: 'monospace',
+                flexShrink: 0
+              }}>
+                {cadastre.roomCode}
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {cadastre.roomName}
+                </span>
+                <span style={{ fontSize: '9.5px', color: '#94a3b8' }}>
+                  Tier {cadastre.floorNumber} • {cadastre.carpetAreaSqFt} sq ft • RTK Fixed
+                </span>
+              </div>
+            </div>
+
+            {/* Toggle Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsCollapsed(!isCollapsed);
+              }}
+              style={{
+                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                borderRadius: '8px',
+                color: '#38bdf8',
+                padding: '4px 10px',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+            >
+              <span>{isCollapsed ? 'Details' : 'Minimize'}</span>
+              {isCollapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Expanded Sheet Content */}
+        {!isCollapsed && (
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '10px 14px'
+          }}>
+            {/* 1. Touch Mode Selector Pills */}
+            <div style={{
+              display: 'flex',
+              gap: '6px',
+              overflowX: 'auto',
+              paddingBottom: '8px',
+              scrollbarWidth: 'none'
+            }}>
+              {(['realistic', 'xray', 'wireframe'] as DisplayMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => handleDisplayModeSelect(mode)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    border: currentDisplayMode === mode ? '1.5px solid #38bdf8' : '1px solid #334155',
+                    backgroundColor: currentDisplayMode === mode ? 'rgba(56, 189, 248, 0.22)' : 'rgba(30, 41, 59, 0.7)',
+                    color: currentDisplayMode === mode ? '#38bdf8' : '#94a3b8',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
+                  }}
+                >
+                  {mode === 'realistic' ? '🏢 Realistic' : mode === 'xray' ? '👁️ X-Ray' : '📐 Wireframe'}
+                </button>
+              ))}
+
+              <button
+                onClick={handleTogglePointCloud}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: pointCloudActive ? '1.5px solid #a855f7' : '1px solid #334155',
+                  backgroundColor: pointCloudActive ? 'rgba(168, 85, 247, 0.22)' : 'rgba(30, 41, 59, 0.7)',
+                  color: pointCloudActive ? '#c084fc' : '#94a3b8',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
+                }}
+              >
+                ☁️ Point Cloud
+              </button>
+
+              <button
+                onClick={handleReplay}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #334155',
+                  backgroundColor: 'rgba(30, 41, 59, 0.7)',
+                  color: '#38bdf8',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
+                }}
+              >
+                🔄 Replay Build
+              </button>
+            </div>
+
+            {/* 2. ULPIN & Copy Card */}
+            <div style={{
+              backgroundColor: 'rgba(30, 41, 59, 0.8)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '10px',
+              padding: '10px 12px',
+              marginBottom: '10px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    14-Digit ULPIN Identifier:
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: 800, color: '#38bdf8', fontFamily: 'monospace' }}>
+                    {cadastre.ulpinFormatted}
+                  </span>
+                </div>
+                <button
+                  onClick={handleCopy}
+                  style={{
+                    backgroundColor: copied ? '#16a34a' : 'rgba(56, 189, 248, 0.15)',
+                    border: '1px solid',
+                    borderColor: copied ? '#22c55e' : 'rgba(56, 189, 248, 0.4)',
+                    color: '#ffffff',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Copy size={12} />
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 3. Mobile Navigation Tabs */}
+            <div style={{
+              display: 'flex',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              marginBottom: '10px'
+            }}>
+              {[
+                { id: 'overview', label: 'Overview' },
+                { id: 'gnss', label: 'RTK GNSS' },
+                { id: 'room', label: 'Door & Specs' },
+                { id: 'all_rooms', label: 'All Rooms' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  style={{
+                    flex: 1,
+                    padding: '7px 4px',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: activeTab === tab.id ? '2px solid #38bdf8' : '2px solid transparent',
+                    color: activeTab === tab.id ? '#38bdf8' : '#94a3b8',
+                    fontSize: '11.5px',
+                    fontWeight: activeTab === tab.id ? 700 : 500,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 4. Tab Body Content */}
+            <div style={{ paddingBottom: '12px' }}>
+              {activeTab === 'overview' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                  <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Unit Code:</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>{cadastre.buildingUnitId}</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Carpet Area:</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#a7f3d0' }}>{cadastre.carpetAreaSqFt} sq ft ({cadastre.carpetAreaSqM} m²)</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Occupancy:</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#f8fafc' }}>{cadastre.occupancyType}</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Fire Safety:</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#4ade80' }}>Verified Active ✓</div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'gnss' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', backgroundColor: 'rgba(30,41,59,0.5)', borderRadius: '6px', fontSize: '11px' }}>
+                    <span style={{ color: '#94a3b8' }}>Latitude:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#38bdf8' }}>{cadastre.latitude}° N</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', backgroundColor: 'rgba(30,41,59,0.5)', borderRadius: '6px', fontSize: '11px' }}>
+                    <span style={{ color: '#94a3b8' }}>Longitude:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#38bdf8' }}>{cadastre.longitude}° E</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', backgroundColor: 'rgba(30,41,59,0.5)', borderRadius: '6px', fontSize: '11px' }}>
+                    <span style={{ color: '#94a3b8' }}>MSL Elevation:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#a7f3d0' }}>{cadastre.elevationMsl} m MSL</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', backgroundColor: 'rgba(30,41,59,0.5)', borderRadius: '6px', fontSize: '11px' }}>
+                    <span style={{ color: '#94a3b8' }}>GNSS Fix Quality:</span>
+                    <span style={{ color: '#22c55e', fontWeight: 600 }}>RTK Fixed (±0.012m)</span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'room' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px' }}>
+                  <div style={{ backgroundColor: 'rgba(30,41,59,0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <span style={{ color: '#94a3b8', fontSize: '10px' }}>Door Volumetrics:</span>
+                    <div style={{ color: '#ffffff', fontWeight: 700, marginTop: '2px' }}>
+                      {cadastre.doorVolume.widthM}m W × {cadastre.doorVolume.heightM}m H × {cadastre.doorVolume.depthM}m D = {cadastre.doorVolume.volumeM3} m³
+                    </div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(30,41,59,0.5)', padding: '8px', borderRadius: '6px' }}>
+                    <span style={{ color: '#94a3b8', fontSize: '10px' }}>Door Leaf Specification:</span>
+                    <div style={{ color: '#ffffff', marginTop: '2px' }}>{cadastre.doorType}</div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'all_rooms' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                  {['A-101', 'A-111', 'A-112', 'A-113', 'A-114', 'A-115', 'A-116', 'A-117', 'A-118', 'A-119'].map((rCode) => (
+                    <button
+                      key={rCode}
+                      onClick={() => onRoomSelect(rCode)}
+                      style={{
+                        padding: '6px',
+                        borderRadius: '6px',
+                        backgroundColor: roomNumber === rCode ? '#0284c7' : 'rgba(30,41,59,0.6)',
+                        color: roomNumber === rCode ? '#ffffff' : '#94a3b8',
+                        border: '1px solid',
+                        borderColor: roomNumber === rCode ? '#38bdf8' : 'rgba(255,255,255,0.1)',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {rCode}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div style={{

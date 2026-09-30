@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DesktopDownloadModal } from '../components/desktop/DesktopDownloadModal';
+import { MobileBottomNav } from '../components/layout/MobileBottomNav';
 import {
   ChevronDown,
   ChevronLeft,
@@ -248,6 +249,7 @@ export const PublicPortalPage: React.FC = () => {
 
   return (
     <div
+      className="public-portal-root"
       style={{
         backgroundColor: highContrast ? '#050b14' : '#f5f7fd',
         color: highContrast ? '#ffffff' : '#2a2f5b',
@@ -262,6 +264,11 @@ export const PublicPortalPage: React.FC = () => {
     >
       {/* Responsive Styles for Mobile Compatibility */}
       <style>{`
+        @media (max-width: 768px) {
+          .public-portal-root {
+            padding-bottom: 74px !important;
+          }
+        }
         @media (max-width: 992px) {
           .portal-top-bar {
             padding: 8px 16px !important;
@@ -3233,6 +3240,9 @@ export const PublicPortalPage: React.FC = () => {
         </div>
       )}
 
+
+      {/* Mobile Floating Bottom Navigation Dock */}
+      <MobileBottomNav />
 
       {/* Standalone Desktop 3D App Download Modal */}
       <DesktopDownloadModal

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, ChevronDown, User, LogOut, Shield, ExternalLink, RefreshCw, Monitor, Building2, Sparkles, MapPin, Download } from 'lucide-react';
+import { Bell, ChevronDown, User, LogOut, Shield, ExternalLink, RefreshCw, Monitor, Building2, Sparkles, MapPin, Download, Menu } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { mockStore } from '../../data/mockStore';
 import { DesktopDownloadModal } from '../desktop/DesktopDownloadModal';
@@ -8,7 +8,7 @@ interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = () => {
+export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const authUser = mockStore.getAuthUser();
@@ -48,7 +48,8 @@ export const Header: React.FC<HeaderProps> = () => {
   return (
     <header className="naksha-admin-header" style={{ width: '100%', flexShrink: 0, zIndex: 40 }}>
       {/* Top Gov of India Accessibility Strip */}
-      <div style={{
+      {/* Top Gov of India Accessibility Strip */}
+      <div className="desktop-accessibility-strip" style={{
         backgroundColor: '#0f2b5c',
         color: '#e2e8f0',
         padding: '4px 24px',
@@ -145,8 +146,30 @@ export const Header: React.FC<HeaderProps> = () => {
         borderBottom: '1px solid #e2e8f0',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
       }}>
-        {/* Left: NAKSHA Official Brand Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Left: NAKSHA Official Brand Logo & Mobile Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              className="mobile-header-menu-btn"
+              style={{
+                display: 'none',
+                backgroundColor: '#eff6ff',
+                border: '1.5px solid #bfdbfe',
+                borderRadius: '8px',
+                padding: '6px 8px',
+                color: '#1b539c',
+                cursor: 'pointer',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Open Navigation Menu"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={20} />
+            </button>
+          )}
+
           <Link to={getHomeLink()} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <img
               src="/assets/naksha_2_logo.png"
@@ -669,6 +692,21 @@ export const Header: React.FC<HeaderProps> = () => {
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
       />
+
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-accessibility-strip {
+            display: none !important;
+          }
+          .mobile-header-menu-btn {
+            display: flex !important;
+          }
+          .naksha-admin-header div[style*="padding: 0 24px"] {
+            padding: 0 12px !important;
+            height: 52px !important;
+          }
+        }
+      `}</style>
     </header>
   );
 };

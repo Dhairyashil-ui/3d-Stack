@@ -43,8 +43,20 @@ export const Ppcrc3DView: React.FC<Ppcrc3DViewProps> = ({
   const [targetRoom, setTargetRoom] = useState<string>(initialRoom);
   const [currentDisplayMode, setCurrentDisplayMode] = useState<DisplayMode>('realistic');
 
-  // Search box minimization: after search, it shrinks into a small search icon in top-right corner
-  const [searchMinimized, setSearchMinimized] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() => 
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Search box minimization: default minimized on mobile to keep 3D view clear
+  const [searchMinimized, setSearchMinimized] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
 
   // Property Details visibility: appears when camera reaches door without changing frame
   const [showDetailsPanel, setShowDetailsPanel] = useState<boolean>(false);
@@ -166,42 +178,78 @@ export const Ppcrc3DView: React.FC<Ppcrc3DViewProps> = ({
       {showSearchBox && (
         <div style={{
           position: 'absolute',
-          top: '16px',
-          right: '16px',
+          top: isMobile ? '12px' : '16px',
+          right: isMobile && !searchMinimized ? '12px' : '16px',
+          left: isMobile && !searchMinimized ? '12px' : 'auto',
           zIndex: 60,
           pointerEvents: 'auto'
         }}>
           {searchMinimized ? (
-            <button
-              onClick={() => setSearchMinimized(false)}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.92)',
-                backdropFilter: 'blur(12px)',
-                border: '1.5px solid #38bdf8',
-                borderRadius: '50%',
-                width: '42px',
-                height: '42px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#38bdf8',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5), 0 0 14px rgba(56, 189, 248, 0.3)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              title="Search another ULPIN / Building ID"
-            >
-              <Search size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {appState === 'twin_active' && (
+                <button
+                  onClick={() => {
+                    setAppState('initial_map');
+                    setShowDetailsPanel(false);
+                    if (onStateChange) onStateChange('initial_map');
+                  }}
+                  style={{
+                    backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    borderRadius: '20px',
+                    padding: '6px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    color: '#38bdf8',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5)'
+                  }}
+                >
+                  <span>🗺️</span>
+                  <span>Map</span>
+                </button>
+              )}
+              <button
+                onClick={() => setSearchMinimized(false)}
+                style={{
+                  backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1.5px solid #38bdf8',
+                  borderRadius: isMobile ? '20px' : '50%',
+                  width: isMobile ? 'auto' : '42px',
+                  height: isMobile ? '34px' : '42px',
+                  padding: isMobile ? '0 12px' : '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  color: '#38bdf8',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5), 0 0 14px rgba(56, 189, 248, 0.3)',
+                  cursor: 'pointer',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  transition: 'all 0.2s'
+                }}
+                title="Search another ULPIN / Building ID"
+              >
+                <Search size={isMobile ? 15 : 18} />
+                {isMobile && <span>Search</span>}
+              </button>
+            </div>
           ) : (
             <div style={{
-              width: '330px',
-              backgroundColor: 'rgba(15, 23, 42, 0.94)',
+              width: isMobile ? '100%' : '330px',
+              maxWidth: '100%',
+              backgroundColor: 'rgba(15, 23, 42, 0.96)',
               backdropFilter: 'blur(16px)',
-              borderRadius: '10px',
-              border: '1px solid rgba(56, 189, 248, 0.35)',
-              padding: '12px 14px',
-              boxShadow: '0 8px 26px rgba(0, 0, 0, 0.65), 0 0 16px rgba(56, 189, 248, 0.12)',
+              borderRadius: '12px',
+              border: '1px solid rgba(56, 189, 248, 0.45)',
+              padding: isMobile ? '10px 12px' : '12px 14px',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.75), 0 0 16px rgba(56, 189, 248, 0.15)',
               display: 'flex',
               flexDirection: 'column',
               gap: '8px',

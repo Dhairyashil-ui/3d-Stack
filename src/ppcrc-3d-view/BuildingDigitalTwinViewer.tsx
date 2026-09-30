@@ -1802,35 +1802,40 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
 
       {/* 1. Top Telemetry & Precision GNSS Strip (Visible only during build, flight, and target lock) */}
       {animStage !== 'idle' && animStage !== 'empty' && Boolean(telemetryText) && (
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '70px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          pointerEvents: 'none',
-          zIndex: 20
-        }}>
+        <div 
+          className="telemetry-gnss-strip"
+          style={{
+            position: 'absolute',
+            top: '12px',
+            left: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px',
+            pointerEvents: 'none',
+            zIndex: 20,
+            maxWidth: 'calc(100vw - 110px)'
+          }}
+        >
           <div style={{
             backgroundColor: 'rgba(15, 23, 42, 0.9)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(56, 189, 248, 0.35)',
             borderRadius: '8px',
-            padding: '7px 14px',
+            padding: '6px 12px',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
+            gap: '8px',
             boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
           }}>
             <div style={{
-              width: '9px',
-              height: '9px',
+              width: '8px',
+              height: '8px',
               borderRadius: '50%',
               backgroundColor: animStage === 'at_room' ? '#22c55e' : '#38bdf8',
               boxShadow: `0 0 10px ${animStage === 'at_room' ? '#22c55e' : '#38bdf8'}`
             }} />
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#f8fafc', fontFamily: 'monospace' }}>
               {telemetryText}
             </span>
           </div>
@@ -1840,17 +1845,17 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
               backgroundColor: 'rgba(15, 23, 42, 0.9)',
               border: '1px solid rgba(56, 189, 248, 0.4)',
               borderRadius: '6px',
-              padding: '6px 12px',
+              padding: '5px 10px',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
               color: '#38bdf8',
-              fontSize: '12px',
+              fontSize: '11px',
               fontFamily: 'monospace',
               fontWeight: 700
             }}>
-              <span>15s QUANTUM BUILD:</span>
-              <div style={{ width: '100px', height: '6px', backgroundColor: '#1e293b', borderRadius: '3px', overflow: 'hidden' }}>
+              <span>15s BUILD:</span>
+              <div style={{ width: '80px', height: '5px', backgroundColor: '#1e293b', borderRadius: '3px', overflow: 'hidden' }}>
                 <div style={{ width: `${buildPercent}%`, height: '100%', backgroundColor: '#38bdf8', transition: 'width 0.1s linear' }} />
               </div>
               <span>{buildPercent}%</span>
@@ -1861,19 +1866,23 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
 
       {/* 2. Detail Mark ON DOOR MID (Center of the Door Leaf, NOT Above/Upside!) */}
       {proximityRoom && (
-        <div style={{
-          position: 'absolute',
-          left: `${proximityRoom.screenPos.x}px`,
-          top: `${proximityRoom.screenPos.y}px`,
-          transform: 'translate(-50%, -50%)', // Centered directly on door mid!
-          pointerEvents: 'none',
-          zIndex: 35,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '4px',
-          animation: 'fadeInScale 0.2s ease-out'
-        }}>
+        <div 
+          className="mid-door-tag"
+          style={{
+            position: 'absolute',
+            left: `${proximityRoom.screenPos.x}px`,
+            top: `${proximityRoom.screenPos.y}px`,
+            transform: 'translate(-50%, -50%)', // Centered directly on door mid!
+            pointerEvents: 'none',
+            zIndex: 35,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '4px',
+            animation: 'fadeInScale 0.2s ease-out',
+            maxWidth: '90vw'
+          }}
+        >
           {/* Target Central Crosshair Marker on Door Mid */}
           <div style={{
             width: '24px',
@@ -1940,6 +1949,18 @@ export const BuildingDigitalTwinViewer: React.FC<BuildingDigitalTwinViewerProps>
           to {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
+          }
+        }
+        @media (max-width: 768px) {
+          .telemetry-gnss-strip {
+            top: 8px !important;
+            left: 8px !important;
+            gap: 6px !important;
+            max-width: calc(100vw - 110px) !important;
+          }
+          .mid-door-tag {
+            transform: translate(-50%, -50%) scale(0.88) !important;
+            max-width: 270px !important;
           }
         }
       `}</style>
