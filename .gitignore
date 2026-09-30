@@ -12,6 +12,7 @@ node_modules
 dist
 dist-ssr
 dist-server
+dist-desktop
 *.local
 
 # Environment

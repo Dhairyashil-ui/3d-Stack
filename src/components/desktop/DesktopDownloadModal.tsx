@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   FolderArchive,
   Layers,
-  Terminal
+  Terminal,
+  Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -132,20 +133,20 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
           >
             <ShieldCheck size={20} color="#0284c7" style={{ flexShrink: 0, marginTop: '2px' }} />
             <div style={{ fontSize: '12.5px', color: '#0369a1', lineHeight: '1.55' }}>
-              <strong>Offline Desktop Architecture:</strong> The NAKSHA Desktop Application is a standalone client software designed for survey agencies (such as <b>Survey of India</b> and empaneled drone operators). As specified in the official operating manual, high-capacity <b>.tpk</b> orthorectified imagery and <b>.gdb</b> geodatabase packages are processed and validated natively on the local workstation before transmission to the WebGIS server.
+              <strong>NAKSHA 2.0 Native 3D Workstation:</strong> High-performance 64-bit client workstation engineered for GPU-accelerated volumetric 3D cadastral rendering, sub-centimeter RTK rover GNSS control, and local offline tile caching for seamless field and workstation operations.
             </div>
           </div>
 
           {/* Download Options Grid */}
           <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Select Download Package
+            Select Download Package (Windows 64-bit)
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px', marginBottom: '24px' }}>
-            {/* 1. Direct .EXE Launcher */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
+            {/* 1. Windows Setup Installer (.exe) */}
             <a
-              href="/downloads/NAKSHA_Desktop_Launcher.exe"
-              download="NAKSHA_Desktop_Launcher.exe"
+              href="/downloads/Naksha 2.0_2.0.0_x64-setup.exe"
+              download="Naksha 2.0_2.0.0_x64-setup.exe"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -155,7 +156,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                 backgroundColor: '#ffffff',
                 border: '2px solid #2563eb',
                 textDecoration: 'none',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.1)',
+                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.12)',
                 transition: 'all 0.2s ease'
               }}
             >
@@ -165,14 +166,14 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                     <Monitor size={20} color="#2563eb" />
                   </div>
                   <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: '10px' }}>
-                    Direct .EXE
+                    Setup .EXE (2.8 MB)
                   </span>
                 </div>
                 <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
-                  Desktop Launcher (.exe)
+                  Windows Installer Setup
                 </h4>
                 <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                  Direct executable: Double-click to immediately launch the desktop workstation link.
+                  Recommended installer with Desktop shortcut and Start Menu integration.
                 </p>
               </div>
 
@@ -191,37 +192,92 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                 }}
               >
                 <Download size={14} />
-                <span>Download .EXE Launcher</span>
+                <span>Download Setup (.exe)</span>
               </div>
             </a>
 
-            {/* 2. Direct Native Electron Run */}
-            <div
+            {/* 2. Standalone Portable .EXE */}
+            <a
+              href="/downloads/Naksha 2.0.exe"
+              download="Naksha 2.0.exe"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 padding: '16px',
                 borderRadius: '12px',
-                backgroundColor: '#f8fafc',
+                backgroundColor: '#ffffff',
                 border: '1.5px solid #cbd5e1',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                textDecoration: 'none',
+                transition: 'all 0.2s ease'
               }}
             >
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <div style={{ backgroundColor: '#f1f5f9', padding: '8px', borderRadius: '8px' }}>
-                    <Terminal size={20} color="#0f172a" />
+                  <div style={{ backgroundColor: '#f0fdf4', padding: '8px', borderRadius: '8px' }}>
+                    <Zap size={20} color="#16a34a" />
                   </div>
-                  <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#e2e8f0', color: '#334155', padding: '2px 8px', borderRadius: '10px' }}>
-                    Native Desktop
+                  <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '10px' }}>
+                    Standalone (9.0 MB)
                   </span>
                 </div>
                 <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
-                  Native Desktop Window
+                  Standalone Portable (.exe)
                 </h4>
                 <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                  Runs as an independent software window on your desktop (not in web browser).
+                  Zero-installation executable. Double-click to launch the 3D workstation immediately.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  backgroundColor: '#16a34a',
+                  color: '#ffffff',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  fontSize: '12.5px',
+                  fontWeight: 700
+                }}
+              >
+                <Download size={14} />
+                <span>Download Portable .EXE</span>
+              </div>
+            </a>
+
+            {/* 3. Windows MSI Package */}
+            <a
+              href="/downloads/Naksha 2.0_2.0.0_x64_en-US.msi"
+              download="Naksha 2.0_2.0.0_x64_en-US.msi"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '16px',
+                borderRadius: '12px',
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div style={{ backgroundColor: '#f8fafc', padding: '8px', borderRadius: '8px' }}>
+                    <ShieldCheck size={20} color="#0f172a" />
+                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#e2e8f0', color: '#334155', padding: '2px 8px', borderRadius: '10px' }}>
+                    MSI Package (3.9 MB)
+                  </span>
+                </div>
+                <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
+                  Windows Installer (.msi)
+                </h4>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 14px 0', lineHeight: '1.4' }}>
+                  Standard Windows Installer package for institutional and enterprise administration.
                 </p>
               </div>
 
@@ -235,19 +291,19 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                   color: '#38bdf8',
                   padding: '9px 12px',
                   borderRadius: '8px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  fontFamily: 'monospace'
+                  fontSize: '12.5px',
+                  fontWeight: 700
                 }}
               >
-                <span>npm run desktop</span>
+                <Download size={14} />
+                <span>Download .MSI Package</span>
               </div>
-            </div>
+            </a>
 
-            {/* 3. Safe Windows ZIP Package */}
+            {/* 4. Complete Portable ZIP Archive */}
             <a
-              href="/downloads/NAKSHA_Desktop_v2.4_Windows_x64.zip"
-              download="NAKSHA_Desktop_v2.4_Windows_x64.zip"
+              href="/downloads/Naksha-2.0-Windows-x64.zip"
+              download="Naksha-2.0-Windows-x64.zip"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -265,13 +321,13 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                   <div style={{ backgroundColor: '#f1f5f9', padding: '8px', borderRadius: '8px' }}>
                     <FolderArchive size={20} color="#475569" />
                   </div>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>6.9 MB</span>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>10.2 MB</span>
                 </div>
                 <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
-                  Complete Package (.zip)
+                  Complete ZIP Archive
                 </h4>
                 <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                  Contains .exe launcher, batch files, config, and complete user manual.
+                  Full portable suite with all libraries, assets, and documentation included.
                 </p>
               </div>
 
