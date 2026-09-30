@@ -30,12 +30,34 @@ __pycache__/
 # Scratch & Temporary
 scratch/
 blender_err.txt
+*.blend
 *.blend1
+*.blend@
 test_*.png
+*.tmp
+*.bak
+
+# Temporary Scripts & Data in Root
+/*.py
+/*.cjs
+/*.js
+!vite.config.ts
+/*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.app.json
+!tsconfig.node.json
+!.oxlintrc.json
+/*.bat
+/*.exe
+
+# Obsolete Models in Root
+/*.glb
+/*.gltf
 
 # Media & Large Screen Assets
 *.mp4
-*.pdf
 unwanted 3d/
 naksha-portal/
 surveyers_map2/
