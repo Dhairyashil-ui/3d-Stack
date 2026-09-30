@@ -180,9 +180,8 @@ export const PublicPortalPage: React.FC = () => {
   // State Specific Section - Maharashtra selected by default
   const [selectedState, setSelectedState] = useState<string>('Maharashtra');
 
-  // Modals (Lightbox / Video / Desktop Download)
+  // Modals (Photo Lightbox / Desktop Download)
   const [selectedPhoto, setSelectedPhoto] = useState<{ src: string; title: string } | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
   const [desktopModalOpen, setDesktopModalOpen] = useState(false);
 
   // Back to Top Button
@@ -256,14 +255,152 @@ export const PublicPortalPage: React.FC = () => {
         fontSize: `${14 * fontScale}px`,
         lineHeight: 1.5,
         minHeight: '100vh',
-        position: 'relative'
+        position: 'relative',
+        maxWidth: '100vw',
+        overflowX: 'hidden'
       }}
     >
+      {/* Responsive Styles for Mobile Compatibility */}
+      <style>{`
+        @media (max-width: 992px) {
+          .portal-top-bar {
+            padding: 8px 16px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+          }
+          .portal-top-bar-right {
+            width: 100% !important;
+            justify-content: space-between !important;
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+          }
+          .portal-header-wrap {
+            padding: 14px 16px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 14px !important;
+          }
+          .portal-header-cta {
+            width: 100% !important;
+          }
+          .portal-header-cta button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .portal-nav-bar {
+            padding: 0 12px !important;
+            justify-content: flex-start !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+          }
+          .portal-nav-bar::-webkit-scrollbar {
+            display: none !important;
+          }
+          .portal-nav-track {
+            flex-wrap: nowrap !important;
+            white-space: nowrap !important;
+          }
+          .portal-hero-slider {
+            min-height: 200px !important;
+          }
+          .portal-milestones-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .portal-state-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .portal-state-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+          }
+          .portal-about-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .portal-circle-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 20px !important;
+          }
+          .portal-photo-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 14px !important;
+          }
+          .portal-three-cards-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .portal-announcements-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .portal-footer-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 24px !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .portal-top-bar {
+            padding: 8px 12px !important;
+          }
+          .portal-top-bar-right {
+            gap: 8px !important;
+          }
+          .portal-header-title {
+            font-size: 19px !important;
+          }
+          .portal-header-sub {
+            font-size: 11.5px !important;
+          }
+          .portal-header-tagline {
+            display: none !important;
+          }
+          .portal-hero-slider {
+            min-height: 160px !important;
+            max-height: 220px !important;
+          }
+          .portal-announcements-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .portal-milestones-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+          .portal-state-metrics-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+          .portal-circle-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .portal-photo-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .portal-footer-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .portal-bottom-bar {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+        }
+      `}</style>
+
       {/* ========================================================================= */}
       {/* 1. TOP UTILITY BAR (Government of India, Themes, Accessibility, Translate) */}
       {/* ========================================================================= */}
       <div
         ref={topBarRef}
+        className="portal-top-bar"
         style={{
           backgroundColor: highContrast ? '#0f172a' : '#f4f6fa',
           borderBottom: '1px solid #e2e8f0',
@@ -276,11 +413,11 @@ export const PublicPortalPage: React.FC = () => {
           zIndex: 100
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#334155', fontWeight: 600, fontSize: '13.5px' }}>
-          <span>Government of India</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e3a8a', fontWeight: 700, fontSize: '13px' }}>
+          <span>NAKSHA 2.0 • Smart India Hackathon (SIH 2026) Innovation</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="portal-top-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {/* Theme Selector Pill (Old Theme / New Theme) */}
           <div
             style={{
@@ -378,10 +515,8 @@ export const PublicPortalPage: React.FC = () => {
               >
                 {/* Instagram */}
                 <a
-                  href="https://www.instagram.com/dolr_goi/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Follow DoLR on Instagram"
+                  href="#social"
+                  title="Follow NAKSHA 2.0"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -403,10 +538,8 @@ export const PublicPortalPage: React.FC = () => {
 
                 {/* YouTube */}
                 <a
-                  href="https://www.youtube.com/@dolr_india"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Subscribe to DoLR on YouTube"
+                  href="#social"
+                  title="NAKSHA 2.0 Channel"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -598,12 +731,10 @@ export const PublicPortalPage: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. BRAND HEADER SECTION (Ashoka Lion Capital, Ministry Info, NAKSHA Logo)  */}
-      {/* ========================================================================= */}
-      {/* ========================================================================= */}
       {/* 2. BRAND HEADER SECTION (NAKSHA 2.0 Identity & Desktop App Download CTA) */}
       {/* ========================================================================= */}
       <header
+        className="portal-header-wrap"
         style={{
           backgroundColor: '#ffffff',
           padding: '14px 32px',
@@ -627,7 +758,7 @@ export const PublicPortalPage: React.FC = () => {
             />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '24px', fontWeight: 900, color: '#0f2b5c', letterSpacing: '-0.5px' }}>
+                <span className="portal-header-title" style={{ fontSize: '24px', fontWeight: 900, color: '#0f2b5c', letterSpacing: '-0.5px' }}>
                   NAKSHA <span style={{ color: '#0284c7' }}>2.0</span>
                 </span>
                 <span
@@ -645,10 +776,10 @@ export const PublicPortalPage: React.FC = () => {
                   SIH 2026 PROTOTYPE
                 </span>
               </div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#0284c7', marginTop: '2px', letterSpacing: '0.2px' }}>
+              <div className="portal-header-sub" style={{ fontSize: '13px', fontWeight: 700, color: '#0284c7', marginTop: '2px', letterSpacing: '0.2px' }}>
                 Next-Generation 3D Cadastral & Urban Habitation Digital Twin
               </div>
-              <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '1px' }}>
+              <div className="portal-header-tagline" style={{ fontSize: '11.5px', color: '#64748b', marginTop: '1px' }}>
                 Volumetric Multi-Floor Stratification • Automated Drone Mesh • Sub-Centimeter RTK GNSS
               </div>
             </div>
@@ -656,7 +787,7 @@ export const PublicPortalPage: React.FC = () => {
         </div>
 
         {/* Desktop App Download CTA */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="portal-header-cta" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
             onClick={() => setDesktopModalOpen(true)}
             id="brand-header-desktop-download"
@@ -704,6 +835,7 @@ export const PublicPortalPage: React.FC = () => {
       {/* 3. PRIMARY NAVIGATION BAR (Centered menu with dropdowns)                   */}
       {/* ========================================================================= */}
       <nav
+        className="portal-nav-bar"
         style={{
           backgroundColor: '#ffffff',
           borderBottom: '1px solid #e2e8f0',
@@ -717,7 +849,7 @@ export const PublicPortalPage: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexWrap: 'wrap' }}>
+        <div className="portal-nav-track" style={{ display: 'flex', alignItems: 'center', gap: '2px', flexWrap: 'wrap' }}>
           {/* Home */}
           <Link
             to="/"
@@ -1160,6 +1292,7 @@ export const PublicPortalPage: React.FC = () => {
       {/* 4. HERO BANNER & CAROUSEL SECTION (Interactive Slider)                    */}
       {/* ========================================================================= */}
       <div
+        className="portal-hero-slider"
         onMouseEnter={() => setIsCarouselPaused(true)}
         onMouseLeave={() => setIsCarouselPaused(false)}
         style={{
@@ -1289,6 +1422,7 @@ export const PublicPortalPage: React.FC = () => {
       {/* ========================================================================= */}
       <div
         id="circulars-section"
+        className="portal-announcements-grid"
         style={{
           maxWidth: '1360px',
           margin: '28px auto 0 auto',
@@ -1375,6 +1509,7 @@ export const PublicPortalPage: React.FC = () => {
             </h2>
 
             <div
+              className="portal-milestones-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(4, 1fr)',
@@ -1595,7 +1730,7 @@ export const PublicPortalPage: React.FC = () => {
             <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                 <span style={{ fontSize: '12.5px', color: '#1e293b', lineHeight: '1.4' }}>
-                  Sensitization Workshop on safe disposal of e-waste in DoLR001 (1)
+                  NAKSHA 2.0 (SIH 2026) 3D Cadastral Digital Twin & Volumetric Land Governance Prototype
                 </span>
                 <span
                   style={{
@@ -1709,6 +1844,7 @@ export const PublicPortalPage: React.FC = () => {
         }}
       >
         <div
+          className="portal-state-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)',
@@ -1803,6 +1939,7 @@ export const PublicPortalPage: React.FC = () => {
 
             {/* 9 State Metric Cards (3x3 Grid) */}
             <div
+              className="portal-state-metrics-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
@@ -2097,6 +2234,7 @@ export const PublicPortalPage: React.FC = () => {
       >
         <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
           <div
+            className="portal-about-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.4fr)',
@@ -2201,6 +2339,7 @@ export const PublicPortalPage: React.FC = () => {
 
           {/* 4 Circular Feature Badges */}
           <div
+            className="portal-circle-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
@@ -2351,240 +2490,113 @@ export const PublicPortalPage: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 10. PHOTO GALLERY & VIDEO GALLERY                                         */}
+      {/* ========================================================================= */}
+      {/* 10. PHOTO GALLERY (Field Drone Surveys & Innovation Milestones)           */}
       {/* ========================================================================= */}
       <div
         id="gallery-section"
         style={{
           maxWidth: '1360px',
           margin: '50px auto 0 auto',
-          padding: '0 24px',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)',
-          gap: '36px',
-          alignItems: 'start'
+          padding: '0 24px'
         }}
       >
-        {/* Left: Photo Gallery */}
-        <div>
-          <h2
-            style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#0f3b6c',
-              marginBottom: '16px'
-            }}
-          >
-            Photo Gallery
-          </h2>
-
-          {/* Top Row: 2 Photos */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '14px', marginBottom: '14px' }}>
-            <div
-              onClick={() =>
-                setSelectedPhoto({
-                  src: '/assets/photo-img01.png',
-                  title: 'National Launch of City Survey Programme - Dignitaries on Stage'
-                })
-              }
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <h2
               style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '16/10'
+                fontSize: '22px',
+                fontWeight: 700,
+                color: '#0f3b6c',
+                margin: 0
               }}
             >
-              <img
-                src="/assets/photo-img01.png"
-                alt="NAKSHA Launch Ceremony"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-
-            <div
-              onClick={() =>
-                setSelectedPhoto({
-                  src: '/assets/photo-img02.png',
-                  title: 'Dignitaries Inspecting Survey Drone Technology'
-                })
-              }
-              style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '16/10'
-              }}
-            >
-              <img
-                src="/assets/photo-img02.png"
-                alt="Drone Survey Inspection"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
+              Photo Gallery & Field Survey Impressions
+            </h2>
+            <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
+              High-resolution drone surveys, 3D cadastral ground truthing, and stakeholder consultations.
+            </p>
           </div>
-
-          {/* Bottom Row: 3 Photos */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-            <div
-              onClick={() =>
-                setSelectedPhoto({
-                  src: '/assets/photo-img03.png',
-                  title: 'Memento Presentation at NAKSHA Mission Gathering'
-                })
-              }
-              style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '1'
-              }}
-            >
-              <img
-                src="/assets/photo-img03.png"
-                alt="NAKSHA Event Memento"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-
-            <div
-              onClick={() =>
-                setSelectedPhoto({
-                  src: '/assets/photo-img04.png',
-                  title: 'Field Surveyors & Officials at Regional Convention'
-                })
-              }
-              style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '1'
-              }}
-            >
-              <img
-                src="/assets/photo-img04.png"
-                alt="Audience & Delegates"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-
-            <div
-              onClick={() =>
-                setSelectedPhoto({
-                  src: '/assets/photo-img05.png',
-                  title: 'Citizens and Beneficiaries Gathering'
-                })
-              }
-              style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '1'
-              }}
-            >
-              <img
-                src="/assets/photo-img05.png"
-                alt="Beneficiaries at Launch"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ marginTop: '12px' }}>
-            <a
-              href="#gallery-section"
-              style={{
-                color: '#005cbb',
-                fontSize: '13px',
-                fontWeight: 600,
-                textDecoration: 'none'
-              }}
-            >
-              See More
-            </a>
-          </div>
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#005cbb' }}>
+            5 Field Photographs
+          </span>
         </div>
 
-        {/* Right: Video Gallery */}
-        <div>
-          <h2
-            style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#0f3b6c',
-              marginBottom: '16px'
-            }}
-          >
-            Video Gallery
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {/* Video 1 */}
+        {/* Responsive Photo Grid */}
+        <div
+          className="portal-photo-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '16px'
+          }}
+        >
+          {[
+            {
+              src: '/assets/photo-img01.png',
+              title: 'National Launch of City Survey Programme - Dignitaries on Stage'
+            },
+            {
+              src: '/assets/photo-img02.png',
+              title: 'Dignitaries Inspecting Survey Drone Technology & Sensors'
+            },
+            {
+              src: '/assets/photo-img03.png',
+              title: 'Memento Presentation at NAKSHA Mission Gathering'
+            },
+            {
+              src: '/assets/photo-img04.png',
+              title: 'Field Surveyors & Officials at Regional Convention'
+            },
+            {
+              src: '/assets/photo-img05.png',
+              title: 'Citizens and Beneficiaries Gathering & Property Card Distribution'
+            }
+          ].map((photo, idx) => (
             <div
-              onClick={() =>
-                setSelectedVideo({
-                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                  title: 'National Launch of City Survey Programme - Department of Land Resources'
-                })
-              }
+              key={idx}
+              onClick={() => setSelectedPhoto(photo)}
               style={{
-                borderRadius: '8px',
+                borderRadius: '10px',
                 overflow: 'hidden',
                 cursor: 'pointer',
-                position: 'relative',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '16/9'
+                aspectRatio: '16/11',
+                position: 'relative',
+                backgroundColor: '#e2e8f0',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.12)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
               }}
             >
               <img
-                src="/assets/extracted/video_01.png"
-                alt="National Launch Video"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                src={photo.src}
+                alt={photo.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: '8px 12px',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)',
+                  color: '#ffffff',
+                  fontSize: '11.5px',
+                  lineHeight: '1.3'
+                }}
+              >
+                {photo.title}
+              </div>
             </div>
-
-            {/* Video 2 */}
-            <div
-              onClick={() =>
-                setSelectedVideo({
-                  url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                  title: 'NAKSHA: शहरी भूमि की सही पहचान! 152 Urban Local Bodies'
-                })
-              }
-              style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                position: 'relative',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                aspectRatio: '16/9'
-              }}
-            >
-              <img
-                src="/assets/extracted/video_02.png"
-                alt="NAKSHA 152 ULBs Video"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ marginTop: '12px' }}>
-            <a
-              href="#gallery-section"
-              style={{
-                color: '#005cbb',
-                fontSize: '13px',
-                fontWeight: 600,
-                textDecoration: 'none'
-              }}
-            >
-              See More
-            </a>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -2600,6 +2612,7 @@ export const PublicPortalPage: React.FC = () => {
         }}
       >
         <div
+          className="portal-three-cards-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
@@ -2808,6 +2821,7 @@ export const PublicPortalPage: React.FC = () => {
         }}
       >
         <div
+          className="portal-footer-grid"
           style={{
             maxWidth: '1360px',
             margin: '0 auto',
@@ -2840,71 +2854,41 @@ export const PublicPortalPage: React.FC = () => {
             </div>
 
             {/* App Download Action Buttons */}
-            <div style={{ display: 'flex', gap: '14px', marginTop: '16px', flexWrap: 'wrap', fontSize: '11.5px' }}>
-              <a
-                href="#downloads-section"
+            <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setDesktopModalOpen(true)}
+                id="footer-desktop-download-btn"
                 style={{
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  color: '#16a34a',
-                  textDecoration: 'none',
-                  fontWeight: 600
+                  gap: '8px',
+                  backgroundColor: '#005cbb',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '12.5px',
+                  boxShadow: '0 2px 8px rgba(0,92,187,0.2)'
                 }}
               >
-                <Smartphone size={14} />
-                <span>Android App</span>
-                <Download size={12} />
-              </a>
-
-              <a
-                href="#downloads-section"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  color: '#0284c7',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}
-              >
-                <Monitor size={14} />
-                <span>Windows Mobile App</span>
-                <Download size={12} />
-              </a>
-
-              <Link
-                to="/desktop"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  color: '#2563eb',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}
-              >
-                <Monitor size={14} />
-                <span>Desktop Utility</span>
-                <Download size={12} />
-              </Link>
+                <Monitor size={15} />
+                <span>Download Desktop 3D App</span>
+                <Download size={13} />
+              </button>
             </div>
           </div>
 
-          {/* Column 2: Related Departments */}
+          {/* Column 2: Related Initiatives */}
           <div>
             <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#005cbb', marginBottom: '14px' }}>
-              Related Departments
+              Related Initiatives
             </h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
               <li>
-                <a href="https://rural.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
-                  Ministry of Rural Development
-                </a>
-              </li>
-              <li>
-                <a href="https://dolr.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
-                  Department of Land Resources
+                <a href="https://sih.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
+                  Smart India Hackathon (SIH 2026)
                 </a>
               </li>
               <li>
@@ -2914,12 +2898,17 @@ export const PublicPortalPage: React.FC = () => {
               </li>
               <li>
                 <a href="https://dilrmp.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
-                  DILRMP Portal
+                  DILRMP Modernization Portal
                 </a>
               </li>
               <li>
                 <a href="https://nic.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
                   National Informatics Centre (NIC)
+                </a>
+              </li>
+              <li>
+                <a href="https://mohua.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#475569', textDecoration: 'none' }}>
+                  Ministry of Housing & Urban Affairs
                 </a>
               </li>
             </ul>
@@ -2971,7 +2960,7 @@ export const PublicPortalPage: React.FC = () => {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Mail size={14} color="#64748b" />
-                <span>shyamkumar.dad@gov.in</span>
+                <span>contact@naksha2.gov.in</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', lineHeight: '1.4' }}>
                 <MapPin size={16} color="#64748b" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -2983,6 +2972,7 @@ export const PublicPortalPage: React.FC = () => {
 
         {/* Absolute Bottom Dark Navy Bar */}
         <div
+          className="portal-bottom-bar"
           style={{
             backgroundColor: '#071428',
             color: '#94a3b8',
@@ -2995,15 +2985,9 @@ export const PublicPortalPage: React.FC = () => {
             gap: '12px'
           }}
         >
-          {/* Left: MPSeDC branding */}
+          {/* Left: NAKSHA 2.0 SIH branding */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img
-              src="/assets/extracted/mpsedc_logo.png"
-              alt="MPSeDC Logo"
-              style={{ height: '22px', objectFit: 'contain' }}
-              onError={(e) => (e.currentTarget.style.display = 'none')}
-            />
-            <span>Designed, Developed & Maintained by <strong style={{ color: '#ffffff' }}>MPSEDC</strong> © 2026</span>
+            <span>NAKSHA 2.0 • Smart India Hackathon (SIH 2026) Innovation Prototype • 3D Cadastral Digital Twin</span>
           </div>
 
           {/* Center: Timestamp & Visitor Counter */}
@@ -3249,77 +3233,6 @@ export const PublicPortalPage: React.FC = () => {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 16. VIDEO PLAYER MODAL                                                    */}
-      {/* ========================================================================= */}
-      {selectedVideo && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '24px'
-          }}
-          onClick={() => setSelectedVideo(null)}
-        >
-          <div
-            style={{
-              position: 'relative',
-              maxWidth: '850px',
-              width: '100%',
-              backgroundColor: '#000000',
-              borderRadius: '8px',
-              overflow: 'hidden'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedVideo(null)}
-              style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '50%',
-                width: '36px',
-                height: '36px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10
-              }}
-            >
-              <X size={20} />
-            </button>
-            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-              <iframe
-                src={`${selectedVideo.url}?autoplay=1`}
-                title={selectedVideo.title}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  border: 'none'
-                }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div style={{ padding: '12px 16px', color: '#ffffff', fontSize: '13px', backgroundColor: '#111827' }}>
-              {selectedVideo.title}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Standalone Desktop 3D App Download Modal */}
       <DesktopDownloadModal

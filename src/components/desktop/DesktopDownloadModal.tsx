@@ -145,7 +145,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
             {/* 1. Windows Setup Installer (.exe) */}
             <a
-              href="/downloads/Naksha 2.0_2.0.0_x64-setup.exe"
+              href="/downloads/Naksha%202.0_2.0.0_x64-setup.exe"
               download="Naksha 2.0_2.0.0_x64-setup.exe"
               style={{
                 display: 'flex',
@@ -198,7 +198,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
 
             {/* 2. Standalone Portable .EXE */}
             <a
-              href="/downloads/Naksha 2.0.exe"
+              href="/downloads/Naksha%202.0.exe"
               download="Naksha 2.0.exe"
               style={{
                 display: 'flex',
@@ -250,7 +250,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
 
             {/* 3. Windows MSI Package */}
             <a
-              href="/downloads/Naksha 2.0_2.0.0_x64_en-US.msi"
+              href="/downloads/Naksha%202.0_2.0.0_x64_en-US.msi"
               download="Naksha 2.0_2.0.0_x64_en-US.msi"
               style={{
                 display: 'flex',
@@ -380,7 +380,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                   Desktop User Manual
                 </h4>
                 <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                  Official 8-page DoLR/MPSEDC step-by-step documentation for GDB/TPK uploads.
+                  Official 8-page step-by-step documentation for GDB/TPK uploads and 3D cadastre workflow.
                 </p>
               </div>
 
