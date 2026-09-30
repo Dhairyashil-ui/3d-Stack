@@ -13,6 +13,13 @@ app.use(cors({
 
 app.use(express.json());
 
+// Serve static desktop downloads
+app.use('/dist-desktop', express.static('dist-desktop'));
+app.use('/dist-desktop', express.static('public/dist-desktop'));
+app.use('/dist-desktop', express.static('public/downloads'));
+app.use('/downloads', express.static('public/downloads'));
+app.use('/downloads', express.static('dist-desktop'));
+
 // ==========================================
 // PPCRC Authoritative Pipeline Server State
 // ==========================================

@@ -87,7 +87,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
                   Standalone Offline Utility
                 </span>
                 <span style={{ backgroundColor: '#22c55e', color: '#064e3b', fontSize: '10.5px', fontWeight: 800, padding: '2px 8px', borderRadius: '12px' }}>
-                  v2.4.0 (x64)
+                  v2.0.0 (x64)
                 </span>
               </div>
               <h2 style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 0 0', color: '#ffffff' }}>
@@ -145,7 +145,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
             {/* 1. Windows Setup Installer (.exe) */}
             <a
-              href="/downloads/Naksha%202.0_2.0.0_x64-setup.exe"
+              href="/dist-desktop/Naksha%202.0_2.0.0_x64-setup.exe"
               download="Naksha 2.0_2.0.0_x64-setup.exe"
               style={{
                 display: 'flex',
@@ -198,7 +198,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
 
             {/* 2. Standalone Portable .EXE */}
             <a
-              href="/downloads/Naksha%202.0.exe"
+              href="/dist-desktop/Naksha%202.0.exe"
               download="Naksha 2.0.exe"
               style={{
                 display: 'flex',
@@ -250,7 +250,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
 
             {/* 3. Windows MSI Package */}
             <a
-              href="/downloads/Naksha%202.0_2.0.0_x64_en-US.msi"
+              href="/dist-desktop/Naksha%202.0_2.0.0_x64_en-US.msi"
               download="Naksha 2.0_2.0.0_x64_en-US.msi"
               style={{
                 display: 'flex',
@@ -302,7 +302,7 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
 
             {/* 4. Complete Portable ZIP Archive */}
             <a
-              href="/downloads/Naksha-2.0-Windows-x64.zip"
+              href="/dist-desktop/Naksha-2.0-Windows-x64.zip"
               download="Naksha-2.0-Windows-x64.zip"
               style={{
                 display: 'flex',
@@ -351,9 +351,9 @@ export const DesktopDownloadModal: React.FC<DesktopDownloadModalProps> = ({ isOp
               </div>
             </a>
 
-            {/* 3. User Manual PDF */}
+            {/* 5. User Manual PDF */}
             <a
-              href="/downloads/NAKSHA_Desktop_User_Manual.pdf"
+              href="/dist-desktop/NAKSHA_Desktop_User_Manual.pdf"
               target="_blank"
               rel="noopener noreferrer"
               download="NAKSHA_Desktop_User_Manual.pdf"
