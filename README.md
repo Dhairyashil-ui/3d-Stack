@@ -57,7 +57,7 @@ npm install
 npm run dev
 ```
 
-Visit [`http://localhost:5173/`](http://localhost:5173/) to explore the platform.
+Visit [`[(https://naksha20-sih.vercel.app/)`](https://naksha20-sih.vercel.app/) to explore the platform.
 
 ```bash
 # Optional: Run standalone Electron desktop workstation
