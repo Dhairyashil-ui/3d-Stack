@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { RefreshCw, Eye, EyeOff, Lock, User, AlertCircle, ArrowLeft } from 'lucide-react';
+import { RefreshCw, Eye, EyeOff, Lock, User, AlertCircle, ArrowLeft, Download, Monitor } from 'lucide-react';
 import { mockStore } from '../data/mockStore';
+import { DesktopDownloadModal } from '../components/desktop/DesktopDownloadModal';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [userType, setUserType] = useState<'state' | 'national'>('state');
   const [selectedState, setSelectedState] = useState('Maharashtra');
-  const [emailOrMobile, setEmailOrMobile] = useState('Pune_DM@mh.gov.in');
-  const [password, setPassword] = useState('Admin@123');
+  const [emailOrMobile, setEmailOrMobile] = useState('state.admin@mh.gov.in');
+  const [password, setPassword] = useState('Naksha#Gov2026$Mh');
   const [showPassword, setShowPassword] = useState(false);
   const [captchaCode, setCaptchaCode] = useState('');
   const [userCaptcha, setUserCaptcha] = useState('');
@@ -18,6 +19,7 @@ export const LoginPage: React.FC = () => {
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [desktopModalOpen, setDesktopModalOpen] = useState(false);
 
   // Generate randomized alphanumeric Captcha
   const generateCaptcha = () => {
@@ -57,16 +59,22 @@ export const LoginPage: React.FC = () => {
     }
 
     // Successfully log in
+    const isStateAdmin = emailOrMobile.toLowerCase().includes('state') || emailOrMobile === 'state.admin@mh.gov.in';
     mockStore.setAuthUser({
-      name: userType === 'state' ? 'Pune DM' : 'National Admin',
-      role: 'GIS DM',
+      name: isStateAdmin ? 'State Admin Maharashtra' : (userType === 'state' ? 'Pune DM' : 'National Admin'),
+      role: isStateAdmin ? 'State Admin' : (userType === 'state' ? 'GIS DM' : 'National Admin'),
+      portalMode: isStateAdmin ? 'state' : 'district',
       state: userType === 'state' ? selectedState : 'All India',
       district: 'Pune',
       email: emailOrMobile,
       isLoggedIn: true
     });
 
-    navigate('/portal/home');
+    if (isStateAdmin) {
+      navigate('/state/home');
+    } else {
+      navigate('/portal/home');
+    }
   };
 
   return (
@@ -77,25 +85,44 @@ export const LoginPage: React.FC = () => {
       flexDirection: 'column',
       fontFamily: 'Inter, sans-serif'
     }}>
-      {/* Top Ministry Ribbon */}
+      {/* Top Navigation Ribbon with Back Arrow in Top Left Corner */}
       <div style={{
         backgroundColor: '#0f2b5c',
         color: '#e2e8f0',
-        padding: '6px 24px',
-        fontSize: '12px',
+        padding: '10px 24px',
+        fontSize: '13px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="/assets/bharat-sarkar.svg" alt="Emblem" style={{ height: '16px' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
-          <span>भारत सरकार | Department of Land Resources | Ministry of Rural Development</span>
-        </div>
-        <div>
-          <Link to="/" style={{ color: '#93c5fd', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <ArrowLeft size={13} /> Back to Public Portal
-          </Link>
-        </div>
+        {/* Back Arrow to Main Page in Top Left Corner */}
+        <Link
+          to="/"
+          id="login-top-left-back-btn"
+          title="Back to Main Page"
+          style={{
+            color: '#ffffff',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '13.5px',
+            fontWeight: 600,
+            padding: '6px 14px',
+            borderRadius: '6px',
+            backgroundColor: 'rgba(255,255,255,0.14)',
+            border: '1px solid rgba(255,255,255,0.24)',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.25)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.14)')}
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Main Page</span>
+        </Link>
+        <span style={{ fontSize: '12px', color: '#93c5fd', fontWeight: 500 }}>
+          NAKSHA 2.0 • 3D Cadastral Intelligence Platform
+        </span>
       </div>
 
       {/* Center Login Container */}
@@ -117,8 +144,9 @@ export const LoginPage: React.FC = () => {
           display: 'flex',
           flexDirection: 'column'
         }}>
-          {/* Top Logo Bar */}
+          {/* Top Logo Bar with Top-Left Back Arrow */}
           <div style={{
+            position: 'relative',
             padding: '16px 24px',
             borderBottom: '2px solid #1b539c',
             display: 'flex',
@@ -126,12 +154,46 @@ export const LoginPage: React.FC = () => {
             alignItems: 'center',
             backgroundColor: '#ffffff'
           }}>
+            {/* Top Left Arrow on Card Header */}
+            <Link
+              to="/"
+              id="login-card-back-btn"
+              title="Back to Main Page"
+              style={{
+                position: 'absolute',
+                left: '20px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#1b539c',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '13px',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                backgroundColor: '#f1f5f9',
+                border: '1px solid #cbd5e1',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e2e8f0';
+                e.currentTarget.style.color = '#0f2b5c';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f1f5f9';
+                e.currentTarget.style.color = '#1b539c';
+              }}
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </Link>
+
             <img
-              src="/assets/extracted/naksha_logo.png"
-              alt="NAKSHA Portal"
-              style={{ height: '52px', objectFit: 'contain' }}
+              src="/assets/naksha_2_logo.png"
+              alt="NAKSHA 2.0 Portal"
+              style={{ height: '54px', objectFit: 'contain' }}
               onError={(e) => {
-                e.currentTarget.src = '/assets/top logo of ministery.png';
+                e.currentTarget.style.display = 'none';
               }}
             />
           </div>
@@ -193,11 +255,12 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSignIn}>
+              <form onSubmit={handleSignIn} autoComplete="off" data-lpignore="true">
                 {/* User Type Radio Toggle */}
                 <div style={{ display: 'flex', gap: '24px', marginBottom: '18px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
                     <input
+                      id="login-radio-state"
                       type="radio"
                       name="userType"
                       checked={userType === 'state'}
@@ -208,6 +271,7 @@ export const LoginPage: React.FC = () => {
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
                     <input
+                      id="login-radio-national"
                       type="radio"
                       name="userType"
                       checked={userType === 'national'}
@@ -224,6 +288,7 @@ export const LoginPage: React.FC = () => {
                     State <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   <select
+                    id="login-select-state"
                     value={selectedState}
                     onChange={(e) => setSelectedState(e.target.value)}
                     disabled={userType === 'national'}
@@ -239,7 +304,6 @@ export const LoginPage: React.FC = () => {
                       cursor: userType === 'national' ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    <option value="Maharashtra">Maharashtra</option>
                     <option value="Maharashtra">Maharashtra</option>
                     <option value="Rajasthan">Rajasthan</option>
                     <option value="Gujarat">Gujarat</option>
@@ -258,6 +322,7 @@ export const LoginPage: React.FC = () => {
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
+                      id="login-input-email"
                       type="text"
                       value={emailOrMobile}
                       onChange={(e) => setEmailOrMobile(e.target.value)}
@@ -281,7 +346,12 @@ export const LoginPage: React.FC = () => {
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      id="login-input-password"
+                      name="auth_credential_key"
+                      type="text"
+                      autoComplete="off"
+                      data-lpignore="true"
+                      data-form-type="other"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
@@ -291,7 +361,8 @@ export const LoginPage: React.FC = () => {
                         border: '1px solid #cbd5e1',
                         borderRadius: '6px',
                         fontSize: '13.5px',
-                        outline: 'none'
+                        outline: 'none',
+                        ...({ WebkitTextSecurity: showPassword ? 'none' : 'disc' } as any)
                       }}
                     />
                     <button
@@ -407,6 +478,7 @@ export const LoginPage: React.FC = () => {
 
                 {/* Sign In Button */}
                 <button
+                  id="login-btn-submit"
                   type="submit"
                   style={{
                     width: '100%',
@@ -427,87 +499,6 @@ export const LoginPage: React.FC = () => {
                 >
                   SIGN IN
                 </button>
-
-                {/* OR Divider */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  margin: '18px 0',
-                  color: '#94a3b8',
-                  fontSize: '12px'
-                }}>
-                  <div style={{ flex: 1, height: '1px', backgroundColor: '#e2e8f0' }} />
-                  <span style={{ padding: '0 12px', fontWeight: 600 }}>OR</span>
-                  <div style={{ flex: 1, height: '1px', backgroundColor: '#e2e8f0' }} />
-                </div>
-
-                {/* Direct Station Portals */}
-                <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <Link
-                    to="/surveyor"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      width: '100%',
-                      backgroundColor: '#f59e0b',
-                      color: '#0f172a',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      boxShadow: '0 2px 6px rgba(245,158,11,0.3)'
-                    }}
-                  >
-                    <span>🛰️ Enter Surveyor Station (MAP-2 & 3D GIS)</span>
-                  </Link>
-                  <Link
-                    to="/desktop"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      width: '100%',
-                      backgroundColor: '#0f172a',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <span>💻 Open Desktop Workstation</span>
-                  </Link>
-                </div>
-
-                {/* Back to Home Button */}
-                <div style={{ marginTop: '12px' }}>
-                  <Link
-                    to="/"
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      textAlign: 'center',
-                      backgroundColor: '#ffffff',
-                      color: '#1b539c',
-                      border: '1.5px solid #1b539c',
-                      borderRadius: '6px',
-                      padding: '9px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    BACK TO PUBLIC HOME
-                  </Link>
-                </div>
               </form>
             </div>
           </div>
@@ -543,7 +534,7 @@ export const LoginPage: React.FC = () => {
             {forgotSubmitted ? (
               <div>
                 <p style={{ color: '#16a34a', fontSize: '14px' }}>
-                  ✓ A password reset link and OTP have been dispatched to your registered government email address.
+                  ✓ A password reset link and OTP have been dispatched to your registered official email address.
                 </p>
                 <button
                   onClick={() => setForgotModalOpen(false)}
@@ -620,6 +611,12 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Standalone Desktop App Download Modal */}
+      <DesktopDownloadModal
+        isOpen={desktopModalOpen}
+        onClose={() => setDesktopModalOpen(false)}
+      />
     </div>
   );
 };

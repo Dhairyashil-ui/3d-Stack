@@ -150,6 +150,7 @@ export const StateCreateRolePage: React.FC = () => {
               Role Name <span style={{ color: '#dc2626' }}>*</span>
             </label>
             <input
+              id="input-role-name"
               type="text"
               placeholder="Role Name"
               value={roleName}
@@ -164,6 +165,7 @@ export const StateCreateRolePage: React.FC = () => {
               Description
             </label>
             <input
+              id="input-role-desc"
               type="text"
               placeholder="Description"
               value={description}
@@ -181,6 +183,7 @@ export const StateCreateRolePage: React.FC = () => {
                 <tr style={{ backgroundColor: '#1b539c', color: '#ffffff' }}>
                   <th style={{ padding: '10px 14px', width: '50px', textAlign: 'center' }}>
                     <input
+                      id="chk-toggle-all-permissions"
                       type="checkbox"
                       defaultChecked
                       onChange={(e) => toggleAll(e.target.checked)}
@@ -262,6 +265,7 @@ export const StateCreateRolePage: React.FC = () => {
         {/* Submit Button */}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button
+            id="btn-submit-role"
             type="submit"
             style={{
               backgroundColor: '#1b539c',

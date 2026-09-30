@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Bell, ChevronDown, User, LogOut, Shield, ExternalLink, RefreshCw, Monitor, Building2, Sparkles, MapPin } from 'lucide-react';
+import { Bell, ChevronDown, User, LogOut, Shield, ExternalLink, RefreshCw, Monitor, Building2, Sparkles, MapPin, Download } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { mockStore } from '../../data/mockStore';
-import { SihDemoModal } from '../ulb/SihDemoModal';
+import { DesktopDownloadModal } from '../desktop/DesktopDownloadModal';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -21,8 +21,8 @@ export const Header: React.FC<HeaderProps> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [langHindi, setLangHindi] = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
 
   const switchRole = (role: 'state' | 'district' | 'ulb' | 'surveyor') => {
     mockStore.switchPortalRole(role);
@@ -59,15 +59,30 @@ export const Header: React.FC<HeaderProps> = () => {
         borderBottom: '1px solid rgba(255,255,255,0.1)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="/assets/bharat-sarkar.svg" alt="Emblem" style={{ height: '15px' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
           <span style={{ fontWeight: 600 }}>भारत सरकार | Government of India</span>
           <span style={{ color: '#93c5fd', marginLeft: '6px' }}>• Department of Land Resources</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <Link to="/desktop" style={{ color: '#38bdf8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-            <Monitor size={12} />
-            <span>Desktop Utility</span>
-          </Link>
+          <button
+            onClick={() => setDownloadModalOpen(true)}
+            style={{
+              background: 'rgba(56, 189, 248, 0.15)',
+              border: '1px solid #38bdf8',
+              color: '#38bdf8',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              fontWeight: 700,
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: '4px'
+            }}
+            title="Download NAKSHA Desktop Application (Windows 64-bit)"
+          >
+            <Download size={12} />
+            <span>Download Desktop App</span>
+          </button>
           <Link to="/" style={{ color: '#93c5fd', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span>Public Portal</span>
             <ExternalLink size={11} />
@@ -134,11 +149,12 @@ export const Header: React.FC<HeaderProps> = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <Link to={getHomeLink()} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <img
-              src="/assets/extracted/naksha_logo.png"
-              alt="NAKSHA"
+              src="/assets/naksha_2_logo.png"
+              alt="NAKSHA 2.0"
+              title="NAKSHA 2.0 - National Geospatial Knowledge-based Land Survey of Urban Habitations"
               style={{ height: '42px', objectFit: 'contain' }}
               onError={(e) => {
-                e.currentTarget.src = '/assets/top logo of ministery.png';
+                e.currentTarget.style.display = 'none';
               }}
             />
           </Link>
@@ -164,27 +180,6 @@ export const Header: React.FC<HeaderProps> = () => {
 
         {/* Right: Badges & Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* SIH 12-Step Guided Walkthrough Trigger Button */}
-          <button
-            onClick={() => setDemoModalOpen(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#fdf4ff',
-              color: '#a21caf',
-              border: '1.5px solid #f0abfc',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(162, 28, 175, 0.1)'
-            }}
-          >
-            <Sparkles size={13} color="#a21caf" />
-            <span>SIH 12-Step Walkthrough</span>
-          </button>
 
           {/* 3-Way Role Switcher Dropdown */}
           <div style={{ position: 'relative' }}>
@@ -670,8 +665,10 @@ export const Header: React.FC<HeaderProps> = () => {
         </div>
       </div>
 
-      {/* SIH 12-Step Guided Walkthrough Modal */}
-      <SihDemoModal isOpen={demoModalOpen} onClose={() => setDemoModalOpen(false)} />
+      <DesktopDownloadModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+      />
     </header>
   );
 };

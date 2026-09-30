@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { DataTable, Column } from '../components/common/DataTable';
 import { Modal } from '../components/common/Modal';
@@ -8,6 +8,14 @@ import { Plus, Eye, Lock, CheckCircle2, FileText, Upload } from 'lucide-react';
 export const CaseEntryPage: React.FC = () => {
   const [casesList, setCasesList] = useState<CaseRecord[]>(mockStore.getCases());
   const [searchUlb, setSearchUlb] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setCasesList(mockStore.getCases());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);

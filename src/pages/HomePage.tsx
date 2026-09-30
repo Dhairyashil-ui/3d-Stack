@@ -169,16 +169,16 @@ export const HomePage: React.FC = () => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '16px'
         }}>
-          {/* Card 1: Manage AOI */}
+          {/* Card 1: Survey Unit Details & Spatial Pipeline */}
           <Link
-            to="/portal/manage-aoi"
+            to="/portal/survey-units"
             style={{
               backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              padding: '20px',
+              borderRadius: '10px',
+              border: '2px solid #bfdbfe',
+              padding: '22px',
               textDecoration: 'none',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              boxShadow: '0 2px 8px rgba(27, 83, 156, 0.08)',
               transition: 'transform 0.15s, box-shadow 0.15s',
               display: 'flex',
               flexDirection: 'column',
@@ -190,85 +190,39 @@ export const HomePage: React.FC = () => {
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(27, 83, 156, 0.08)';
             }}
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ backgroundColor: '#eff6ff', color: '#1b539c', padding: '10px', borderRadius: '8px' }}>
-                  <Map size={22} />
+                  <FileSpreadsheet size={24} />
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563eb', background: '#dbeafe', padding: '2px 8px', borderRadius: '10px' }}>
-                  UTM 44N
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#1d4ed8', background: '#dbeafe', padding: '3px 10px', borderRadius: '12px' }}>
+                  1. AOI ➔ 2. GIS ➔ 3. Units
                 </span>
               </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
-                Manage AOI
+              <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#1e293b', fontWeight: 800 }}>
+                Survey Unit Details & Spatial Pipeline
               </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Define geographic Areas of Interest, upload and inspect shapefiles on real satellite maps.
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.45' }}>
+                Unified 3-stage district workflow: <strong>1. Manage AOI</strong> (boundary definition) ➔ <strong>2. Upload GIS Layers</strong> (cadastre & GCPs) ➔ <strong>3. Survey Unit Details</strong> (ward & surveyor allocations).
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1b539c', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1b539c', fontSize: '13px', fontWeight: 700, marginTop: '16px' }}>
+              <span>Open Survey Pipeline</span>
               <ArrowRight size={14} />
             </div>
           </Link>
 
-          {/* Card 2: Upload Layer */}
-          <Link
-            to="/portal/upload-layer"
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              padding: '20px',
-              textDecoration: 'none',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              transition: 'transform 0.15s, box-shadow 0.15s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <div style={{ backgroundColor: '#f0fdf4', color: '#16a34a', padding: '10px', borderRadius: '8px' }}>
-                  <Layers size={22} />
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#16a34a', background: '#dcfce7', padding: '2px 8px', borderRadius: '10px' }}>
-                  Cadastral GIS
-                </span>
-              </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
-                Upload Layer
-              </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Integrate cadastral boundaries, property tax points, building footprints, and layout plans.
-              </p>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#16a34a', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
-              <ArrowRight size={14} />
-            </div>
-          </Link>
-
-          {/* Card 3: Case Entry/Manage */}
+          {/* Card 2: Case Entry/Manage */}
           <Link
             to="/portal/case-entry"
             style={{
               backgroundColor: '#ffffff',
-              borderRadius: '8px',
+              borderRadius: '10px',
               border: '1px solid #e2e8f0',
-              padding: '20px',
+              padding: '22px',
               textDecoration: 'none',
               boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
               transition: 'transform 0.15s, box-shadow 0.15s',
@@ -288,125 +242,33 @@ export const HomePage: React.FC = () => {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ backgroundColor: '#faf5ff', color: '#9333ea', padding: '10px', borderRadius: '8px' }}>
-                  <FileText size={22} />
+                  <FileText size={24} />
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#9333ea', background: '#f3e8ff', padding: '2px 8px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#9333ea', background: '#f3e8ff', padding: '3px 10px', borderRadius: '12px' }}>
                   Gazette Orders
                 </span>
               </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
+              <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#1e293b', fontWeight: 800 }}>
                 Case Entry / Manage
               </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Track survey-related legal cases, upload settlement orders, and record official proceedings.
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.45' }}>
+                Track survey-related legal cases, upload settlement orders, dispute proceedings, and court records.
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9333ea', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9333ea', fontSize: '13px', fontWeight: 700, marginTop: '16px' }}>
+              <span>Open Case Module</span>
               <ArrowRight size={14} />
             </div>
           </Link>
 
-          {/* Card 4: Survey Unit Details */}
-          <Link
-            to="/portal/survey-units"
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              padding: '20px',
-              textDecoration: 'none',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              transition: 'transform 0.15s, box-shadow 0.15s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <div style={{ backgroundColor: '#fff7ed', color: '#ea580c', padding: '10px', borderRadius: '8px' }}>
-                  <FileSpreadsheet size={22} />
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#ea580c', background: '#ffedd5', padding: '2px 8px', borderRadius: '10px' }}>
-                  Unit Tracker
-                </span>
-              </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
-                Survey Unit Details
-              </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Monitor surveyor unit assignments, ward coverage, and live map upload timestamps.
-              </p>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ea580c', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
-              <ArrowRight size={14} />
-            </div>
-          </Link>
-
-          {/* Card 5: User Management */}
-          <Link
-            to="/portal/user-management/users"
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              padding: '20px',
-              textDecoration: 'none',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              transition: 'transform 0.15s, box-shadow 0.15s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <div style={{ backgroundColor: '#ecfeff', color: '#0891b2', padding: '10px', borderRadius: '8px' }}>
-                  <Users size={22} />
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#0891b2', background: '#cffafe', padding: '2px 8px', borderRadius: '10px' }}>
-                  RBAC Controls
-                </span>
-              </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
-                User Management
-              </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Departments, designations, role permissions matrix, user directory, and area allocations.
-              </p>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0891b2', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
-              <ArrowRight size={14} />
-            </div>
-          </Link>
-
-          {/* Card 6: Manage Publication */}
+          {/* Card 3: Manage Publication */}
           <Link
             to="/portal/survey-activities/manage-publication"
             style={{
               backgroundColor: '#ffffff',
-              borderRadius: '8px',
+              borderRadius: '10px',
               border: '1px solid #e2e8f0',
-              padding: '20px',
+              padding: '22px',
               textDecoration: 'none',
               boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
               transition: 'transform 0.15s, box-shadow 0.15s',
@@ -426,21 +288,21 @@ export const HomePage: React.FC = () => {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ backgroundColor: '#fef2f2', color: '#e11d48', padding: '10px', borderRadius: '8px' }}>
-                  <Activity size={22} />
+                  <Activity size={24} />
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#e11d48', background: '#ffe4e6', padding: '2px 8px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#e11d48', background: '#ffe4e6', padding: '3px 10px', borderRadius: '12px' }}>
                   OTP & e-Sign
                 </span>
               </div>
-              <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#1e293b', fontWeight: 700 }}>
+              <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#1e293b', fontWeight: 800 }}>
                 Manage Publication
               </h4>
-              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.4' }}>
-                Final RoR publication workflow with parcel map inspection, OTP verification, and Aadhaar e-Sign.
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: '1.45' }}>
+                Final RoR publication workflow with parcel map inspection, OTP verification, and official Aadhaar e-Sign.
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#e11d48', fontSize: '13px', fontWeight: 600, marginTop: '16px' }}>
-              <span>Open Module</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#e11d48', fontSize: '13px', fontWeight: 700, marginTop: '16px' }}>
+              <span>Open Publication</span>
               <ArrowRight size={14} />
             </div>
           </Link>

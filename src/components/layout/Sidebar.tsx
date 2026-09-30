@@ -811,21 +811,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
             {!isStateMode && (
               <>
                 <NavLink
-                  to="/portal/manage-aoi"
+                  to="/portal/survey-units"
                   className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
                   style={({ isActive }) => getLinkStyle(isActive)}
                 >
-                  <Map size={18} />
-                  {!collapsed && <span>Manage AOI</span>}
-                </NavLink>
-
-                <NavLink
-                  to="/portal/upload-layer"
-                  className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                  style={({ isActive }) => getLinkStyle(isActive)}
-                >
-                  <UploadCloud size={18} />
-                  {!collapsed && <span>Upload Layer</span>}
+                  <FileSpreadsheet size={18} />
+                  {!collapsed && <span>Survey Unit Details</span>}
                 </NavLink>
 
                 <NavLink
@@ -836,136 +827,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
                   <FileText size={18} />
                   {!collapsed && <span>Case Entry/Manage</span>}
                 </NavLink>
-
-                <NavLink
-                  to="/portal/survey-units"
-                  className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                  style={({ isActive }) => getLinkStyle(isActive)}
-                >
-                  <FileSpreadsheet size={18} />
-                  {!collapsed && <span>Survey Unit Details</span>}
-                </NavLink>
               </>
             )}
 
-            {/* User Management Accordion */}
-            <div>
-              <button
-                onClick={() => setUserMgmtOpen(!userMgmtOpen)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 20px',
-                  color: isUserMgmtActive ? '#ffffff' : 'rgba(255, 255, 255, 0.82)',
-                  backgroundColor: isUserMgmtActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                  border: 'none',
-                  borderLeft: isUserMgmtActive ? '4px solid #ffffff' : '4px solid transparent',
-                  cursor: 'pointer',
-                  fontSize: '13.5px',
-                  fontWeight: 600,
-                  textAlign: 'left'
-                }}
+            {/* User Management (State Admin only) */}
+            {isStateMode && (
+              <NavLink
+                to={`${basePath}/user-management`}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                style={({ isActive }) => getLinkStyle(isActive)}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <Users size={18} />
-                  {!collapsed && <span>User Management</span>}
-                </div>
-                {!collapsed && (userMgmtOpen ? <ChevronDown size={15} /> : <ChevronRight size={15} />)}
-              </button>
-
-              {userMgmtOpen && !collapsed && (
-                <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.14)', padding: '4px 0' }}>
-                  <NavLink
-                    to={`${basePath}/user-management/departments`}
-                    style={({ isActive }) => ({
-                      display: 'block',
-                      padding: '7px 20px 7px 48px',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                      textDecoration: 'none',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 600 : 400
-                    })}
-                  >
-                    Create/Manage Department
-                  </NavLink>
-                  <NavLink
-                    to={`${basePath}/user-management/designations`}
-                    style={({ isActive }) => ({
-                      display: 'block',
-                      padding: '7px 20px 7px 48px',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                      textDecoration: 'none',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 600 : 400
-                    })}
-                  >
-                    Create/Manage Designation
-                  </NavLink>
-                  <NavLink
-                    to={`${basePath}/user-management/roles`}
-                    style={({ isActive }) => ({
-                      display: 'block',
-                      padding: '7px 20px 7px 48px',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                      textDecoration: 'none',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 600 : 400
-                    })}
-                  >
-                    Create/Manage Role
-                  </NavLink>
-                  <NavLink
-                    to={`${basePath}/user-management/users`}
-                    style={({ isActive }) => ({
-                      display: 'block',
-                      padding: '7px 20px 7px 48px',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                      textDecoration: 'none',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 600 : 400
-                    })}
-                  >
-                    Create/Manage User
-                  </NavLink>
-                  <NavLink
-                    to={`${basePath}/user-management/assign-role`}
-                    style={({ isActive }) => ({
-                      display: 'block',
-                      padding: '7px 20px 7px 48px',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                      textDecoration: 'none',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 600 : 400
-                    })}
-                  >
-                    Assign Role to User
-                  </NavLink>
-                  {!isStateMode && (
-                    <NavLink
-                      to="/portal/user-management/assign-area"
-                      style={({ isActive }) => ({
-                        display: 'block',
-                        padding: '7px 20px 7px 48px',
-                        color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.75)',
-                        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.18)' : 'transparent',
-                        textDecoration: 'none',
-                        fontSize: '12.5px',
-                        fontWeight: isActive ? 600 : 400
-                      })}
-                    >
-                      Assign Area to User
-                    </NavLink>
-                  )}
-                </div>
-              )}
-            </div>
+                <Users size={18} />
+                {!collapsed && <span>User Management</span>}
+              </NavLink>
+            )}
 
             {/* Survey Activities (District Admin only) */}
             {!isStateMode && (

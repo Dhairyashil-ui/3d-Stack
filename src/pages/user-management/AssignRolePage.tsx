@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
@@ -9,6 +9,14 @@ export const AssignRolePage: React.FC = () => {
   const [users, setUsers] = useState<PortalUser[]>(mockStore.getUsers());
   const [searchName, setSearchName] = useState('');
   const [searchRole, setSearchRole] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setUsers(mockStore.getUsers());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Modals
   const [assignModalOpen, setAssignModalOpen] = useState(false);
@@ -121,6 +129,7 @@ export const AssignRolePage: React.FC = () => {
           Assign Role to User
         </h2>
         <button
+          id="btn-assign-role"
           onClick={() => setAssignModalOpen(true)}
           style={{
             backgroundColor: '#1b539c',
@@ -246,11 +255,13 @@ export const AssignRolePage: React.FC = () => {
               Select Roles <span style={{ color: '#dc2626' }}>*</span>
             </label>
             <select
+              id="select-assign-role"
               value={roleToAssign}
               onChange={(e) => setRoleToAssign(e.target.value)}
               required
               style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
             >
+              <option value="District 3D Cadastral Admin">District 3D Cadastral Admin</option>
               <option value="ULB">ULB</option>
               <option value="GIS DM">GIS DM</option>
               <option value="Manage Publication">Manage Publication</option>
@@ -264,6 +275,7 @@ export const AssignRolePage: React.FC = () => {
               Users <span style={{ color: '#dc2626' }}>*</span>
             </label>
             <select
+              id="select-assign-user"
               value={targetUserId}
               onChange={(e) => setTargetUserId(e.target.value)}
               required
@@ -281,6 +293,7 @@ export const AssignRolePage: React.FC = () => {
               Description
             </label>
             <input
+              id="input-assign-desc"
               type="text"
               placeholder="Remarks regarding role assignment..."
               value={assignDesc}
@@ -298,6 +311,7 @@ export const AssignRolePage: React.FC = () => {
               Close
             </button>
             <button
+              id="btn-submit-assign"
               type="submit"
               style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '6px', padding: '8px 24px', fontWeight: 600, cursor: 'pointer' }}
             >

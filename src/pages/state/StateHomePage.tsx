@@ -1,13 +1,218 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, ArrowRight, ShieldCheck, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Users, FileText, ArrowRight, ShieldCheck, CheckCircle, Building2, Clock, X } from 'lucide-react';
 import { mockStore } from '../../data/mockStore';
 
 export const StateHomePage: React.FC = () => {
+  const navigate = useNavigate();
   const metrics = mockStore.getStateMetrics();
+
+  // 3-Second Timer for Continuing to District Admin
+  const [isContinuing, setIsContinuing] = useState(false);
+  const [continueTimer, setContinueTimer] = useState(3);
+  const continueIntervalRef = useRef<any>(null);
+
+  const cleanupTimer = () => {
+    if (continueIntervalRef.current) {
+      clearInterval(continueIntervalRef.current as any);
+      continueIntervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return cleanupTimer;
+  }, []);
+
+  const proceedToDistrictAdmin = () => {
+    cleanupTimer();
+    setIsContinuing(false);
+    mockStore.switchPortalRole('district');
+    navigate('/portal/home');
+  };
+
+  const handleStartContinue = () => {
+    cleanupTimer();
+    setIsContinuing(true);
+    setContinueTimer(3);
+
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const rem = Math.max(0, 3 - elapsed);
+      setContinueTimer(rem);
+
+      if (rem <= 0) {
+        clearInterval(interval);
+        proceedToDistrictAdmin();
+      }
+    }, 50);
+
+    continueIntervalRef.current = interval;
+  };
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* 3-SECOND COUNTDOWN OVERLAY TO DISTRICT ADMIN */}
+      {isContinuing && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          boxSizing: 'border-box',
+          animation: 'fadeIn 0.2s ease'
+        }}>
+          <div style={{
+            backgroundColor: '#0f172a',
+            border: '2px solid #3b82f6',
+            borderRadius: '16px',
+            padding: '32px 36px',
+            maxWidth: '520px',
+            width: '100%',
+            textAlign: 'center',
+            color: '#ffffff',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(59, 130, 246, 0.35)',
+            position: 'relative'
+          }}>
+            {/* Cancel Button */}
+            <button
+              onClick={() => {
+                cleanupTimer();
+                setIsContinuing(false);
+              }}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                color: '#94a3b8',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              title="Cancel"
+            >
+              <X size={16} />
+            </button>
+
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              backgroundColor: '#1e3a8a',
+              border: '2px solid #60a5fa',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px auto',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
+            }}>
+              <Building2 size={30} color="#93c5fd" />
+            </div>
+
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 800,
+              color: '#ffffff',
+              margin: '0 0 8px 0',
+              letterSpacing: '-0.5px'
+            }}>
+              Continuing to District Admin Page
+            </h2>
+
+            <p style={{
+              fontSize: '13.5px',
+              color: '#93c5fd',
+              margin: '0 0 20px 0',
+              fontWeight: 500
+            }}>
+              Switching role to Pune District Collector (GIS DM Portal)
+            </p>
+
+            {/* Animated 3-second progress bar */}
+            <div style={{
+              width: '100%',
+              height: '8px',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              marginBottom: '14px'
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${((3 - continueTimer) / 3) * 100}%`,
+                backgroundColor: '#3b82f6',
+                boxShadow: '0 0 12px #3b82f6',
+                transition: 'width 0.05s linear'
+              }} />
+            </div>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#cbd5e1',
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              marginBottom: '24px'
+            }}>
+              Redirecting in <strong style={{ color: '#38bdf8', fontSize: '18px' }}>{continueTimer.toFixed(1)}s</strong>...
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={proceedToDistrictAdmin}
+                style={{
+                  backgroundColor: '#2563eb',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>Continue Now</span>
+                <ArrowRight size={14} />
+              </button>
+              <button
+                onClick={() => {
+                  cleanupTimer();
+                  setIsContinuing(false);
+                }}
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  color: '#94a3b8',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Welcome Hero Container matching State Admin Manual Page 6 & 7 */}
       <div style={{
         backgroundColor: '#ffffff',
@@ -33,8 +238,36 @@ export const StateHomePage: React.FC = () => {
         <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '8px' }}>
           National geospatial Knowledge-based land Survey of urban Habitations (NAKSHA)
         </div>
-        <div style={{ fontSize: '15px', color: '#ea580c', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px' }}>
+        <div style={{ fontSize: '15px', color: '#ea580c', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>
           STATE: MADHYA PRADESH
+        </div>
+
+        {/* Continue to District Admin Page Button with 3s Timer */}
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            onClick={handleStartContinue}
+            id="btn-continue-district-admin"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+              color: '#ffffff',
+              padding: '11px 26px',
+              borderRadius: '30px',
+              fontSize: '13.5px',
+              fontWeight: 800,
+              border: '1.5px solid #93c5fd',
+              boxShadow: '0 6px 20px rgba(30, 58, 138, 0.25), 0 0 14px rgba(147, 197, 253, 0.35)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            title="Click to start 3-second timer and continue to District Admin Page"
+          >
+            <Clock size={16} color="#93c5fd" />
+            <span>Continue to District Admin Page (3s Timer)</span>
+            <ArrowRight size={15} color="#93c5fd" />
+          </button>
         </div>
 
         {/* Center 3D Heritage & Survey Equipment Display */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
@@ -9,6 +9,14 @@ export const DesignationsPage: React.FC = () => {
   const [designations, setDesignations] = useState<Designation[]>(mockStore.getDesignations());
   const [searchName, setSearchName] = useState('');
   const [searchDept, setSearchDept] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setDesignations(mockStore.getDesignations());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Modals
   const [modalOpen, setModalOpen] = useState(false);
@@ -106,6 +114,7 @@ export const DesignationsPage: React.FC = () => {
           Create/Manage Designation
         </h2>
         <button
+          id="btn-create-designation"
           onClick={() => {
             setSelectedDesig(null);
             setIsViewMode(false);
@@ -271,12 +280,14 @@ export const DesignationsPage: React.FC = () => {
                   Select Department <span style={{ color: '#dc2626' }}>*</span>
                 </label>
                 <select
+                  id="select-desig-dept"
                   value={formState.department}
                   onChange={(e) => setFormState({ ...formState, department: e.target.value })}
                   required
                   style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
                 >
                   <option value="Revenue Department">Revenue Department</option>
+                  <option value="Dept of Land Records & 3D Cadastre">Dept of Land Records & 3D Cadastre</option>
                   <option value="Pune_SedDA">Pune_SedDA</option>
                   <option value="MPSEDC IT">MPSEDC IT</option>
                   <option value="Town & Country Planning">Town & Country Planning</option>
@@ -289,6 +300,7 @@ export const DesignationsPage: React.FC = () => {
                 Designation <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <input
+                id="input-desig-name"
                 type="text"
                 placeholder="Enter Designation Name"
                 value={formState.designationName}
@@ -303,6 +315,7 @@ export const DesignationsPage: React.FC = () => {
                 Description (Optional)
               </label>
               <textarea
+                id="input-desig-desc"
                 rows={3}
                 placeholder="Provide a brief description..."
                 value={formState.description}
@@ -320,6 +333,7 @@ export const DesignationsPage: React.FC = () => {
                 Cancel
               </button>
               <button
+                id="btn-submit-designation"
                 type="submit"
                 style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '6px', padding: '8px 24px', fontWeight: 600, cursor: 'pointer' }}
               >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
@@ -10,6 +10,14 @@ export const StateUsersPage: React.FC = () => {
   const [searchName, setSearchName] = useState('');
   const [searchDept, setSearchDept] = useState('');
   const [searchDesig, setSearchDesig] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setUsers(mockStore.getUsers());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -186,6 +194,7 @@ export const StateUsersPage: React.FC = () => {
           Create/Manage User
         </h2>
         <button
+          id="btn-create-user"
           onClick={() => setCreateModalOpen(true)}
           style={{
             backgroundColor: '#1b539c',
@@ -336,6 +345,7 @@ export const StateUsersPage: React.FC = () => {
                 First Name <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <input
+                id="input-user-first-name"
                 type="text"
                 placeholder="First Name"
                 value={formData.firstName}
@@ -350,6 +360,7 @@ export const StateUsersPage: React.FC = () => {
                 Last Name <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <input
+                id="input-user-last-name"
                 type="text"
                 placeholder="Last Name"
                 value={formData.lastName}
@@ -364,6 +375,7 @@ export const StateUsersPage: React.FC = () => {
                 Email ID <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <input
+                id="input-user-email"
                 type="email"
                 placeholder="Email Id"
                 value={formData.email}
@@ -378,6 +390,7 @@ export const StateUsersPage: React.FC = () => {
                 Mobile Number <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <input
+                id="input-user-mobile"
                 type="tel"
                 placeholder="Mobile Number"
                 value={formData.mobile}
@@ -405,6 +418,7 @@ export const StateUsersPage: React.FC = () => {
                 Select District <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <select
+                id="select-user-district"
                 value={formData.district}
                 onChange={(e) => setFormData({ ...formData, district: e.target.value })}
                 required
@@ -421,11 +435,13 @@ export const StateUsersPage: React.FC = () => {
                 Select Department <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <select
+                id="select-user-dept"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
               >
                 <option value="Revenue Department">Revenue Department</option>
+                <option value="Dept of Land Records & 3D Cadastre">Dept of Land Records & 3D Cadastre</option>
                 <option value="Pune_SedDA">Pune_SedDA</option>
                 <option value="MPSEDC IT">MPSEDC IT</option>
               </select>
@@ -436,11 +452,13 @@ export const StateUsersPage: React.FC = () => {
                 Select Designation <span style={{ color: '#dc2626' }}>*</span>
               </label>
               <select
+                id="select-user-desig"
                 value={formData.designation}
                 onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                 style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
               >
                 <option value="Collector">Collector</option>
+                <option value="Chief 3D Cadastral Settlement Officer">Chief 3D Cadastral Settlement Officer</option>
                 <option value="DA Pune">DA Pune</option>
                 <option value="GIS Specialist">GIS Specialist</option>
                 <option value="Drone Pilot / Surveyor">Drone Pilot / Surveyor</option>
@@ -453,6 +471,7 @@ export const StateUsersPage: React.FC = () => {
                 Remark
               </label>
               <input
+                id="input-user-remark"
                 type="text"
                 placeholder="Enter Remark"
                 value={formData.remark}
@@ -471,6 +490,7 @@ export const StateUsersPage: React.FC = () => {
               Cancel
             </button>
             <button
+              id="btn-submit-user"
               type="submit"
               style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '6px', padding: '8px 24px', fontWeight: 600, cursor: 'pointer', fontSize: '13.5px' }}
             >

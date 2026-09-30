@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
@@ -10,6 +10,14 @@ export const UsersPage: React.FC = () => {
   const [searchName, setSearchName] = useState('');
   const [searchDept, setSearchDept] = useState('');
   const [searchDesig, setSearchDesig] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setUsers(mockStore.getUsers());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);

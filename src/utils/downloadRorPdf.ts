@@ -54,28 +54,19 @@ export async function downloadOfficialRorPdf(
   doc.setLineWidth(0.4);
   doc.rect(margin, y, contentWidth, headerHeight);
 
-  // Ashoka Lion Capital (Emblem of India) - Left
-  // We draw a clean authoritative vector representation of Ashoka Lion Capital
-  const emblemX = margin + 8;
-  const emblemY = y + 3;
-  
-  // Try loading ashoka emblem image if available
-  const ashokaData = await getBase64ImageFromUrl('/assets/ashoka-emblem.svg') ||
-                     await getBase64ImageFromUrl('/assets/bharat-sarkar.svg');
-  if (ashokaData) {
-    try {
-      doc.addImage(ashokaData, 'PNG', emblemX, emblemY, 14, 18);
-    } catch {
-      drawVectorAshokaEmblem(doc, emblemX, emblemY);
-    }
-  } else {
-    drawVectorAshokaEmblem(doc, emblemX, emblemY);
-  }
-
-  // Maharashtra State Emblem - Right
-  const stateSealX = margin + contentWidth - 22;
-  const stateSealY = y + 3;
-  drawMaharashtraStateSeal(doc, stateSealX, stateSealY);
+  // NAKSHA 2.0 Digital Cadastre Watermark / Badge
+  const badgeX = margin + 8;
+  const badgeY = y + 5;
+  doc.setDrawColor(27, 83, 156);
+  doc.setLineWidth(0.5);
+  doc.rect(badgeX, badgeY, 18, 12, 'S');
+  doc.setFontSize(6.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(27, 83, 156);
+  doc.text('NAKSHA 2.0', badgeX + 9, badgeY + 5, { align: 'center' });
+  doc.setFontSize(4.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text('DIGITAL TWIN', badgeX + 9, badgeY + 9, { align: 'center' });
 
   // Center Government Header Text
   doc.setTextColor(15, 23, 42);
@@ -580,52 +571,3 @@ function drawSignatureGlyph(doc: jsPDF, x: number, y: number): void {
   );
 }
 
-/**
- * Draws a vector Ashoka Lion Capital Emblem (Government of India)
- */
-function drawVectorAshokaEmblem(doc: jsPDF, x: number, y: number): void {
-  doc.setDrawColor(30, 41, 59);
-  doc.setFillColor(248, 250, 252);
-  doc.setLineWidth(0.3);
-
-  // Base Pedestal
-  doc.rect(x + 1, y + 14, 12, 2.5, 'FD');
-  // Dharma Chakra in center
-  doc.circle(x + 7, y + 15.2, 1.2, 'D');
-
-  // Three Lions Heads & Torso
-  doc.rect(x + 2.5, y + 5, 9, 9, 'FD');
-  doc.circle(x + 4, y + 4.5, 2, 'FD'); // Left lion
-  doc.circle(x + 7, y + 3.8, 2.3, 'FD'); // Center lion
-  doc.circle(x + 10, y + 4.5, 2, 'FD'); // Right lion
-
-  // "सत्यमेव जयते" Motto text under base
-  doc.setFontSize(3.8);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(71, 85, 105);
-  doc.text('सत्यमेव जयते', x + 7, y + 18, { align: 'center' });
-}
-
-/**
- * Draws the circular Government of Maharashtra State Seal
- */
-function drawMaharashtraStateSeal(doc: jsPDF, x: number, y: number): void {
-  const cx = x + 7;
-  const cy = y + 8;
-  doc.setDrawColor(30, 41, 59);
-  doc.setLineWidth(0.4);
-
-  // Outer circle
-  doc.circle(cx, cy, 7.5, 'D');
-  doc.setLineWidth(0.2);
-  doc.circle(cx, cy, 6.2, 'D');
-
-  // Inner Diya / Lamp motif
-  doc.triangle(cx - 3, cy + 2, cx + 3, cy + 2, cx, cy - 2.5, 'FD');
-  doc.circle(cx, cy - 3.5, 0.8, 'FD');
-
-  doc.setFontSize(3.2);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 41, 59);
-  doc.text('महाराष्ट्र शासन', cx, cy + 5, { align: 'center' });
-}

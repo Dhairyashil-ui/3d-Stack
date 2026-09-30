@@ -188,7 +188,7 @@ const INITIAL_DESIGNATIONS: Designation[] = [
   { id: 'DES-5', sNo: 5, name: 'Tehsildar / Revenue Inspector', department: 'Revenue Department', description: 'Ground truthing and RoR verification', createdBy: 'Pune District Admin', createdDate: '12-07-2025', status: 'Active' },
 ];
 
-const DEFAULT_PERMISSIONS: PermissionRow[] = [
+export const DEFAULT_PERMISSIONS: PermissionRow[] = [
   { sNo: 1, menuName: 'Home', add: true, update: true, view: true },
   { sNo: 2, menuName: 'Dashboard', add: true, update: true, view: true },
   { sNo: 3, menuName: 'Create/Manage Committee', add: true, update: true, view: true },
@@ -206,10 +206,11 @@ const INITIAL_ROLES: Role[] = [
 ];
 
 const INITIAL_USERS: PortalUser[] = [
-  { id: 'USR-1', sNo: 1, district: 'Pune', firstName: 'Dhiren', lastName: 'Surveyor', name: 'Dhiren Surveyor', email: 'dhiren.survey@mp.gov.in', mobile: '9893044111', department: 'Revenue Department', designation: 'Drone Pilot / Surveyor', roles: ['ULB', 'Surveyor'], actionDate: '14-05-2025', status: 'Active' },
-  { id: 'USR-2', sNo: 2, district: 'Pune', firstName: 'Pune', lastName: 'District Admin', name: 'Pune DM Test', email: 'pune_da@mh.gov.in', mobile: '7000573127', department: 'Pune_SedDA', designation: 'DA Pune', roles: ['GIS DM', 'Manage Publication'], actionDate: '24-05-2025', status: 'Active' },
-  { id: 'USR-3', sNo: 3, district: 'Pune', firstName: 'Pawan', lastName: 'Verma', name: 'Pawan Verma', email: 'pawan.gis@mp.gov.in', mobile: '9425112233', department: 'MPSEDC IT', designation: 'GIS Specialist', roles: ['GIS DM'], actionDate: '09-05-2025', status: 'Active' },
-  { id: 'USR-4', sNo: 4, district: 'Pune', firstName: 'Rajesh', lastName: 'Sharma', name: 'Rajesh Sharma', email: 'sharma.tehsil@mp.gov.in', mobile: '9826019944', department: 'Revenue Department', designation: 'Tehsildar / Revenue Inspector', roles: ['ULB Admin'], actionDate: '06-05-2025', status: 'Active' },
+  { id: 'USR-ME', sNo: 1, district: 'Pune', firstName: 'Dhairyashil', lastName: '', name: 'Dhairyashil', email: 'dhairyashil@naksha.gov.in', mobile: '9699317520', department: 'Survey of India / PMRDA Cadastre Unit', designation: 'Lead Cadastral Surveyor & Drone Officer', roles: ['Lead Surveyor', '3D GIS Specialist', 'Desktop Ingest Officer'], actionDate: '29-09-2026', status: 'Active' },
+  { id: 'USR-1', sNo: 2, district: 'Pune', firstName: 'Dhiren', lastName: 'Surveyor', name: 'Dhiren Surveyor', email: 'dhiren.survey@mp.gov.in', mobile: '9893044111', department: 'Revenue Department', designation: 'Drone Pilot / Surveyor', roles: ['ULB', 'Surveyor'], actionDate: '14-05-2025', status: 'Active' },
+  { id: 'USR-2', sNo: 3, district: 'Pune', firstName: 'Pune', lastName: 'District Admin', name: 'Pune DM Test', email: 'pune_da@mh.gov.in', mobile: '7000573127', department: 'Pune_SedDA', designation: 'DA Pune', roles: ['GIS DM', 'Manage Publication'], actionDate: '24-05-2025', status: 'Active' },
+  { id: 'USR-3', sNo: 4, district: 'Pune', firstName: 'Pawan', lastName: 'Verma', name: 'Pawan Verma', email: 'pawan.gis@mp.gov.in', mobile: '9425112233', department: 'MPSEDC IT', designation: 'GIS Specialist', roles: ['GIS DM'], actionDate: '09-05-2025', status: 'Active' },
+  { id: 'USR-4', sNo: 5, district: 'Pune', firstName: 'Rajesh', lastName: 'Sharma', name: 'Rajesh Sharma', email: 'sharma.tehsil@mp.gov.in', mobile: '9826019944', department: 'Revenue Department', designation: 'Tehsildar / Revenue Inspector', roles: ['ULB Admin'], actionDate: '06-05-2025', status: 'Active' },
 ];
 
 const INITIAL_AREA_ASSIGNMENTS: AreaAssignment[] = [
@@ -479,9 +480,10 @@ export const mockStore = {
     const newDept: Department = {
       ...dept,
       id: `DEP-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
-    list.push(newDept);
+    list.unshift(newDept);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.DEPARTMENTS, list);
     return newDept;
   },
@@ -495,9 +497,10 @@ export const mockStore = {
     const newDesig: Designation = {
       ...desig,
       id: `DES-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
-    list.push(newDesig);
+    list.unshift(newDesig);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.DESIGNATIONS, list);
     return newDesig;
   },
@@ -511,9 +514,10 @@ export const mockStore = {
     const newRole: Role = {
       ...role,
       id: `ROL-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
-    list.push(newRole);
+    list.unshift(newRole);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.ROLES, list);
     return newRole;
   },
@@ -527,9 +531,10 @@ export const mockStore = {
     const newUser: PortalUser = {
       ...user,
       id: `USR-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
-    list.push(newUser);
+    list.unshift(newUser);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.USERS, list);
     return newUser;
   },
@@ -547,9 +552,10 @@ export const mockStore = {
     const newArea: AreaAssignment = {
       ...area,
       id: `AREA-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
-    list.push(newArea);
+    list.unshift(newArea);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.AREA_ASSIGNMENTS, list);
     return newArea;
   },
@@ -584,6 +590,18 @@ export const mockStore = {
   getSurveyUnits(): SurveyUnit[] {
     return getStored(STORAGE_KEYS.SURVEY_UNITS, INITIAL_SURVEY_UNITS);
   },
+  addSurveyUnit(unit: Omit<SurveyUnit, 'id' | 'sNo'>): SurveyUnit {
+    const list = this.getSurveyUnits();
+    const newUnit: SurveyUnit = {
+      ...unit,
+      id: `SU-${Date.now()}`,
+      sNo: 1
+    };
+    list.unshift(newUnit);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
+    setStored(STORAGE_KEYS.SURVEY_UNITS, list);
+    return newUnit;
+  },
 
   // Publications
   getPublications(): PublicationRecord[] {
@@ -617,9 +635,10 @@ export const mockStore = {
     const newAOI: UploadedAoi = {
       ...aoi,
       id: `AOI-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
     list.unshift(newAOI);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.AOIS, list);
     return newAOI;
   },
@@ -633,9 +652,10 @@ export const mockStore = {
     const newLayer: UploadedLayer = {
       ...layer,
       id: `LAY-${Date.now()}`,
-      sNo: list.length + 1
+      sNo: 1
     };
     list.unshift(newLayer);
+    list.forEach((item, idx) => { item.sNo = idx + 1; });
     setStored(STORAGE_KEYS.LAYERS, list);
     return newLayer;
   },

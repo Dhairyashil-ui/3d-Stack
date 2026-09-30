@@ -10,11 +10,13 @@
     "build:server": "esbuild server/server.ts --platform=node --bundle --packages=external --format=esm --outfile=dist-server/index.js",
     "build:all": "npm run build && npm run build:server",
     "start:server": "node dist-server/index.js",
+    "desktop": "electron electron/main.cjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.0.1",
+    "@supabase/supabase-js": "^2.117.2",
     "@turf/turf": "^7.4.0",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.3",
@@ -36,6 +38,7 @@
     "vite": "^8.2.2"
   },
   "devDependencies": {
+    "electron": "^44.4.5",
     "oxlint": "^1.79.0"
   }
 }

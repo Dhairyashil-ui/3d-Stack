@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
@@ -23,6 +23,14 @@ export const RolesPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'create'>('list');
   const [roles, setRoles] = useState<Role[]>(mockStore.getRoles());
   const [searchRole, setSearchRole] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setRoles(mockStore.getRoles());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Create Form State
   const [newRoleName, setNewRoleName] = useState('');
@@ -114,6 +122,7 @@ export const RolesPage: React.FC = () => {
               Create/Manage Role
             </h2>
             <button
+              id="btn-create-role"
               onClick={() => {
                 if (isStateMode) {
                   navigate('/state/user-management/roles/create');

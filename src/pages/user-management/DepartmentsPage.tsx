@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
@@ -9,6 +9,14 @@ export const DepartmentsPage: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>(mockStore.getDepartments());
   const [searchName, setSearchName] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setDepartments(mockStore.getDepartments());
+    };
+    window.addEventListener('storage', handleSync);
+    return () => window.removeEventListener('storage', handleSync);
+  }, []);
 
   // Add Department Modal
   const [modalOpen, setModalOpen] = useState(false);
@@ -109,6 +117,7 @@ export const DepartmentsPage: React.FC = () => {
           Create/Manage Department
         </h2>
         <button
+          id="btn-create-department"
           onClick={() => {
             setSelectedDept(null);
             setIsViewMode(false);
@@ -274,6 +283,7 @@ export const DepartmentsPage: React.FC = () => {
                   Department <span style={{ color: '#dc2626' }}>*</span>
                 </label>
                 <input
+                  id="input-dept-name"
                   type="text"
                   placeholder="Enter Department Name"
                   value={formState.departmentName}
@@ -289,6 +299,7 @@ export const DepartmentsPage: React.FC = () => {
                 Description
               </label>
               <textarea
+                id="input-dept-desc"
                 rows={3}
                 placeholder="Enter description..."
                 value={formState.description}
@@ -306,6 +317,7 @@ export const DepartmentsPage: React.FC = () => {
                 Cancel
               </button>
               <button
+                id="btn-submit-department"
                 type="submit"
                 style={{ backgroundColor: '#1b539c', color: '#ffffff', border: 'none', borderRadius: '6px', padding: '8px 24px', fontWeight: 600, cursor: 'pointer' }}
               >

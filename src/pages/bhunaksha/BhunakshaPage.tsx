@@ -268,12 +268,6 @@ export const BhunakshaPage: React.FC = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <img 
-              src="/assets/bharat-sarkar.svg" 
-              alt="National Emblem" 
-              style={{ height: '26px', width: 'auto' }}
-              onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-            />
             <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '13px' }}>
               भारत सरकार | Government of India
             </span>

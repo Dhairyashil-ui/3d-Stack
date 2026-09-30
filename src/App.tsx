@@ -8,6 +8,7 @@ import { ManageAoiPage } from './pages/ManageAoiPage';
 import { UploadLayerPage } from './pages/UploadLayerPage';
 import { CaseEntryPage } from './pages/CaseEntryPage';
 import { SurveyUnitsPage } from './pages/SurveyUnitsPage';
+import { UserManagementPage } from './pages/user-management/UserManagementPage';
 import { DepartmentsPage } from './pages/user-management/DepartmentsPage';
 import { DesignationsPage } from './pages/user-management/DesignationsPage';
 import { RolesPage } from './pages/user-management/RolesPage';
@@ -26,6 +27,7 @@ import { StateUsersPage } from './pages/state/StateUsersPage';
 
 // Desktop Application Suite matching NAKSHA Desktop Application Manual
 import { DesktopAppPage } from './pages/desktop/DesktopAppPage';
+import { DesktopDownloadPage } from './pages/desktop/DesktopDownloadPage';
 
 // ULB Admin Pages matching NAKSHA ULB Admin Video Tutorial (Maharashtra / Pune District / PMRDA Pune)
 import { UlbHomePage } from './pages/ulb/UlbHomePage';
@@ -63,7 +65,7 @@ import { EvidenceVaultPage } from './pages/surveyor/EvidenceVaultPage';
 import { SurveyorComparisonPage } from './pages/surveyor/SurveyorComparisonPage';
 import { SurveyorVerificationQueuePage } from './pages/surveyor/SurveyorVerificationQueuePage';
 import { BhunakshaPage } from './pages/bhunaksha/BhunakshaPage';
-
+import { Surveyor3DIntelligencePage } from './pages/surveyor/Surveyor3DIntelligencePage';
 export function App() {
   return (
     <BrowserRouter>
@@ -79,9 +81,12 @@ export function App() {
         {/* 2. Authentication */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* 3. NAKSHA Desktop Application Suite (Standalone Utility) */}
+        {/* 3. NAKSHA Desktop Application Suite */}
         <Route path="/desktop" element={<DesktopAppPage />} />
         <Route path="/desktop-app" element={<DesktopAppPage />} />
+
+        {/* Dedicated Desktop Workstation for Surveyor 3D Intelligence */}
+        <Route path="/surveyor/3d-intelligence" element={<Surveyor3DIntelligencePage />} />
 
         {/* 4. ULB Admin Portal matching NAKSHA ULB Admin Video Tutorial (DoLR / Maharashtra Pune PMRDA) */}
         <Route path="/ulb" element={<AdminLayout />}>
@@ -127,20 +132,16 @@ export function App() {
           <Route index element={<Navigate to="/portal/home" replace />} />
           <Route path="home" element={<HomePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="manage-aoi" element={<ManageAoiPage />} />
-          <Route path="upload-aoi" element={<ManageAoiPage />} />
-          <Route path="upload-layer" element={<UploadLayerPage />} />
-          <Route path="case-entry" element={<CaseEntryPage />} />
+          {/* District Admin Spatial Pipeline */}
           <Route path="survey-units" element={<SurveyUnitsPage />} />
+          <Route path="manage-aoi" element={<Navigate to="/portal/survey-units?step=aoi" replace />} />
+          <Route path="upload-aoi" element={<Navigate to="/portal/survey-units?step=aoi" replace />} />
+          <Route path="upload-layer" element={<Navigate to="/portal/survey-units?step=gis" replace />} />
+          <Route path="case-entry" element={<CaseEntryPage />} />
 
-          {/* User Management */}
-          <Route path="user-management" element={<Navigate to="/portal/user-management/users" replace />} />
-          <Route path="user-management/departments" element={<DepartmentsPage />} />
-          <Route path="user-management/designations" element={<DesignationsPage />} />
-          <Route path="user-management/roles" element={<RolesPage />} />
-          <Route path="user-management/users" element={<UsersPage />} />
-          <Route path="user-management/assign-role" element={<AssignRolePage />} />
-          <Route path="user-management/assign-area" element={<AssignAreaPage />} />
+          {/* User Management removed from District Admin, redirects to home */}
+          <Route path="user-management" element={<Navigate to="/portal/home" replace />} />
+          <Route path="user-management/*" element={<Navigate to="/portal/home" replace />} />
 
           {/* Survey Activities */}
           <Route path="survey-activities" element={<Navigate to="/portal/survey-activities/manage-publication" replace />} />
@@ -160,13 +161,13 @@ export function App() {
           <Route path="dashboard" element={<StateDashboardPage />} />
 
           {/* State User Management */}
-          <Route path="user-management" element={<Navigate to="/state/user-management/users" replace />} />
-          <Route path="user-management/departments" element={<DepartmentsPage />} />
-          <Route path="user-management/designations" element={<DesignationsPage />} />
-          <Route path="user-management/roles" element={<RolesPage />} />
+          <Route path="user-management" element={<UserManagementPage />} />
+          <Route path="user-management/departments" element={<Navigate to="/state/user-management" replace />} />
+          <Route path="user-management/designations" element={<Navigate to="/state/user-management" replace />} />
+          <Route path="user-management/roles" element={<Navigate to="/state/user-management" replace />} />
           <Route path="user-management/roles/create" element={<StateCreateRolePage />} />
-          <Route path="user-management/users" element={<StateUsersPage />} />
-          <Route path="user-management/assign-role" element={<AssignRolePage />} />
+          <Route path="user-management/users" element={<Navigate to="/state/user-management" replace />} />
+          <Route path="user-management/assign-role" element={<Navigate to="/state/user-management" replace />} />
 
           {/* Auxiliary */}
           <Route path="reports" element={<ReportsPage />} />
@@ -194,9 +195,9 @@ export function App() {
           {/* 3D Property Intelligence */}
           <Route path="property-search" element={<PropertySearchPage />} />
           <Route path="property-detail" element={<PropertyDetailPage />} />
-          <Route path="three-d-viewer" element={<ThreeDViewerPage />} />
-          <Route path="3d-viewer" element={<Navigate to="/surveyor/three-d-viewer" replace />} />
-          <Route path="3d-intelligence" element={<ThreeDViewerPage />} />
+          <Route path="three-d-viewer" element={<Surveyor3DIntelligencePage />} />
+          <Route path="3d-viewer" element={<Navigate to="/surveyor/3d-intelligence" replace />} />
+          <Route path="3d-intelligence" element={<Surveyor3DIntelligencePage />} />
           <Route path="building-records" element={<BuildingFloorUnitRecordsPage />} />
           <Route path="floor-unit-records" element={<BuildingFloorUnitRecordsPage />} />
           <Route path="evidence" element={<EvidenceVaultPage />} />

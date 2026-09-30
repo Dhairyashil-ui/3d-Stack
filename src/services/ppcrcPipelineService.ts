@@ -135,11 +135,19 @@ export const DEFAULT_DESKTOP_PACKAGES: DesktopPackageItem[] = [
 
 export const DEFAULT_SURVEY_TEAM: SurveyTeamMember[] = [
   {
+    id: 'tm-me',
+    name: 'Dhairyashil',
+    role: 'Lead Cadastral Surveyor & Drone Officer (Assigned Lead)',
+    licenseOrReg: 'SOI-MH-PUNE-9699',
+    isMainOfficer: true,
+    contact: '+91 9699317520 | dhairyashil@naksha.gov.in'
+  },
+  {
     id: 'tm-1',
     name: 'Er. Rajeshwar D. Deshmukh',
     role: 'Chief Cadastral Surveyor & Land Records Officer (Main Officer)',
     licenseOrReg: 'MH-SLR-PUNE-0081',
-    isMainOfficer: true,
+    isMainOfficer: false,
     contact: '+91 98220 14592 | r.deshmukh@pmrda.gov.in'
   },
   {

@@ -103,7 +103,7 @@ export const StateDashboardPage: React.FC = () => {
         gap: '20px'
       }}>
         {/* Card 1: Total Users (Yellow) */}
-        <div style={{
+        <div id="stat-total-users" style={{
           backgroundColor: '#ffffff',
           borderRadius: '10px',
           border: '1px solid #fef08a',
@@ -148,7 +148,7 @@ export const StateDashboardPage: React.FC = () => {
         </div>
 
         {/* Card 2: Active Users (Green) */}
-        <div style={{
+        <div id="stat-active-users" style={{
           backgroundColor: '#ffffff',
           borderRadius: '10px',
           border: '1px solid #bbf7d0',
@@ -193,7 +193,7 @@ export const StateDashboardPage: React.FC = () => {
         </div>
 
         {/* Card 3: Inactive Users (Red) */}
-        <div style={{
+        <div id="stat-inactive-users" style={{
           backgroundColor: '#ffffff',
           borderRadius: '10px',
           border: '1px solid #fecaca',
