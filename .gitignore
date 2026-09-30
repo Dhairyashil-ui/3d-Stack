@@ -34,7 +34,7 @@ test_*.png
 
 # Media & Large Screen Assets
 *.mp4
-NAKSHA_SOP_Eng.pdf
+*.pdf
 unwanted 3d/
 naksha-portal/
 surveyers_map2/
